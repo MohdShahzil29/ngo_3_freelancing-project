@@ -678,6 +678,11 @@ async def get_stats():
         "total_campaigns": total_campaigns
     }
 
+# Root route
+@app.get("/")
+async def root():
+    return {"message": "Star Marketing NGO API", "status": "running"}
+
 # Include router
 app.include_router(api_router)
 
