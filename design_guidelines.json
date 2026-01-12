@@ -1,0 +1,152 @@
+{
+  "identity": {
+    "persona": "E1: The Anti-AI Designer",
+    "mission": "Create a unique, trust-building, and action-oriented digital presence for Star Marketing NGO.",
+    "principles": [
+      "Fusion over Imitation: Mix 'Swiss Precision' (for transparency) with 'Organic Warmth' (for community).",
+      "Emotion First: Every pixel must convey 'Hope' and 'Trust'.",
+      "Content is King: Storytelling drives the layout, not the other way around.",
+      "Zoom In: Use close-up photography to create intimacy with beneficiaries.",
+      "Negative Space: Use generous whitespace to let the mission breathe."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Manrope, sans-serif",
+      "weights": ["600", "700", "800"],
+      "usage": "All section titles, hero text, and card headers.",
+      "letter_spacing": "tracking-tight"
+    },
+    "body": {
+      "font_family": "Public Sans, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Paragraphs, UI labels, data tables.",
+      "line_height": "leading-relaxed"
+    },
+    "accent": {
+      "font_family": "Manrope, sans-serif",
+      "style": "uppercase",
+      "tracking": "tracking-[0.2em]",
+      "usage": "Overlines, small tags, navigation links."
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#0F766E",
+        "foreground": "#FFFFFF",
+        "description": "Deep Teal - Represents stability, nature, and trust."
+      },
+      "secondary": {
+        "DEFAULT": "#F97316",
+        "foreground": "#FFFFFF",
+        "description": "Vibrant Saffron - Represents energy, action, and cultural resonance."
+      },
+      "background": {
+        "DEFAULT": "#FAFAF9",
+        "dark": "#1C1917",
+        "description": "Warm Stone/Paper - Avoid clinical white. Use #FAFAF9 for light mode base."
+      },
+      "surface": {
+        "DEFAULT": "#FFFFFF",
+        "dark": "#292524",
+        "description": "Pure white for cards to pop against the warm background."
+      },
+      "text": {
+        "primary": "#1C1917",
+        "secondary": "#57534E",
+        "muted": "#A8A29E"
+      },
+      "border": {
+        "DEFAULT": "#E7E5E4",
+        "active": "#0F766E"
+      }
+    },
+    "gradients": {
+      "hero_overlay": "linear-gradient(180deg, rgba(15, 118, 110, 0.9) 0%, rgba(15, 118, 110, 0.4) 100%)",
+      "subtle_glow": "radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.15), transparent 70%)"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+      "usage": "Apply as a subtle overlay on solid teal backgrounds to remove digital flatness."
+    },
+    "shadows": {
+      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+      "floating": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      "glow": "0 0 15px rgba(249, 115, 22, 0.3)"
+    },
+    "borders": {
+      "radius": "rounded-lg",
+      "style": "border border-stone-200"
+    }
+  },
+  "layout_strategies": {
+    "marketing": {
+      "grid": "Bento Grid (Mode A)",
+      "spacing": "Generous (p-8 to p-24)",
+      "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    },
+    "dashboard": {
+      "grid": "Control Room Grid (Mode B)",
+      "spacing": "Compact (p-4 to p-6)",
+      "sidebar": "Fixed width (w-64), dark mode by default for contrast."
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-8 py-3 font-semibold tracking-wide",
+      "secondary": "bg-white text-primary border-2 border-primary hover:bg-primary/5 transition-all duration-300 rounded-full px-8 py-3 font-semibold",
+      "ghost": "text-stone-600 hover:text-primary hover:bg-stone-100 rounded-lg px-4 py-2"
+    },
+    "cards": {
+      "feature": "bg-white rounded-xl border border-stone-100 shadow-card hover:shadow-floating transition-all duration-300 p-6 group",
+      "donation": "bg-white rounded-xl border-t-4 border-primary shadow-card p-8 relative overflow-hidden"
+    },
+    "inputs": {
+      "style": "bg-stone-50 border-stone-200 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg"
+    }
+  },
+  "images": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1569173675610-42c361a86e37?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Happy children in school uniforms representing education initiatives",
+      "treatment": "Use with a gradient overlay or in a shaped mask (not a simple rectangle)."
+    },
+    "empowerment": {
+      "url": "https://images.unsplash.com/photo-1637176594832-97454dc84edf?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Group of women standing together representing empowerment",
+      "treatment": "Black and white filter on hover, or vice versa."
+    },
+    "community": {
+      "url": "https://images.unsplash.com/photo-1593442808882-775dfcd90699?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Volunteers interacting with villagers",
+      "treatment": "Soft edges or circular crop."
+    },
+    "medical": {
+      "url": "https://images.unsplash.com/photo-1624903715293-afe920c6adad?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Medical camp building",
+      "treatment": "Use as a background texture with high blur."
+    }
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "hover_lift": "hover:-translate-y-1",
+    "scroll_reveal": "Use Framer Motion for 'whileInView' animations (fade up + scale)."
+  },
+  "accessibility": {
+    "contrast": "Ensure text is #1C1917 on light backgrounds. Use #FFFFFF on Primary Teal.",
+    "focus_states": "Visible ring-2 ring-offset-2 ring-primary",
+    "labels": "All inputs must have visible labels or aria-labels."
+  },
+  "universal_guidelines": [
+    "DO NOT use generic 'Bootstrap' layouts. Use asymmetry.",
+    "DO NOT use pure black (#000000). Use #1C1917.",
+    "DO NOT use gradients for text unless it's a very large headline.",
+    "ALWAYS add 'data-testid' to interactive elements.",
+    "ALWAYS use 'Manrope' for headings and 'Public Sans' for body.",
+    "Ensure all forms have proper validation states (red for error, teal for success)."
+  ],
+  "instructions_to_main_agent": "You are building the Star Marketing NGO platform. Use the JSON data above to guide every design decision. Start by setting up the Tailwind config with the specified colors and fonts. Then, build the Public Website first, focusing on the 'Hero' and 'Donation' flows. Use the provided image URLs. Do not ask for clarification; assume the persona of a senior lead developer and execute with confidence."
+}
