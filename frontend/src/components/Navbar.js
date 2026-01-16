@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -13,10 +13,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-xl">SM</span>
-            </div>
-            <span className="font-heading font-bold text-xl text-stone-900">Star Marketing</span>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_ngoboost/artifacts/oauqu6j1_IMG-20260110-WA0009.jpg" 
+              alt="NVP Welfare Foundation India" 
+              className="h-12 w-12 object-contain"
+            />
+            <span className="font-heading font-bold text-lg sm:text-xl text-stone-900">NVP Welfare Foundation</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">

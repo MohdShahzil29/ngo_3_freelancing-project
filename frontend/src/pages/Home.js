@@ -77,7 +77,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-base text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed"
           >
-            Star Marketing NGO के साथ जुड़ें और समाज के विकास में योगदान दें। शिक्षा, स्वास्थ्य और सशक्तिकरण के क्षेत्र में हम मिलकर बदलाव ला सकते हैं।
+            NVP Welfare Foundation India के साथ जुड़ें और समाज के विकास में योगदान दें। शिक्षा, स्वास्थ्य और सशक्तिकरण के क्षेत्र में हम मिलकर बदलाव ला सकते हैं।
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

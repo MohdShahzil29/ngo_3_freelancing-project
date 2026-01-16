@@ -8,10 +8,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-xl">SM</span>
-              </div>
-              <span className="font-heading font-bold text-xl text-white">Star Marketing</span>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_ngoboost/artifacts/oauqu6j1_IMG-20260110-WA0009.jpg" 
+                alt="NVP Welfare Foundation India" 
+                className="h-10 w-10 object-contain bg-white rounded-full p-1"
+              />
+              <span className="font-heading font-bold text-lg text-white">NVP Welfare Foundation</span>
             </div>
             <p className="text-stone-400 text-sm">
               एक बेहतर कल के लिए साथ मिलकर काम करते हैं
@@ -73,33 +75,22 @@ const Footer = () => {
             <div className="flex flex-col space-y-3 text-sm">
               <div className="flex items-start space-x-2">
                 <MapPin size={18} className="mt-1 flex-shrink-0" />
-                <span>Sikar, Rajasthan, India</span>
+                <span>नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone size={18} className="flex-shrink-0" />
-                <span>90245 48020</span>
+                <span>78776 43155</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail size={18} className="flex-shrink-0" />
-                <span>info@starmarketing.in</span>
+                <span>info@nvpwelfare.in</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-stone-800 mt-8 pt-8 text-center text-sm text-stone-400">
-          <p>&copy; {new Date().getFullYear()} Star Marketing. All rights reserved.</p>
-          <p className="mt-2">
-            Developed by{' '}
-            <a
-              href="https://www.wingstarnarketing.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Star Marketing
-            </a>
-          </p>
+          <p>&copy; {new Date().getFullYear()} NVP Welfare Foundation India. All rights reserved.</p>
         </div>
       </div>
     </footer>
