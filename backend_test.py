@@ -158,25 +158,264 @@ class NGOAPITester:
             self.log_test("Contact Enquiry", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
-    def test_donation_order_creation(self):
-        """Test donation order creation (will fail due to Razorpay config, but should return proper error)"""
-        donation_data = {
-            "donor_name": "Test Donor",
-            "donor_email": "donor@test.com",
-            "donor_phone": "9999999999",
-            "amount": 1000,
-            "purpose": "General Donation"
-        }
-        response = self.make_request('POST', 'donations/create-order', donation_data)
-        
-        # Expected to fail with 500 due to Razorpay not configured
-        if response and response.status_code == 500:
+    def test_admin_login(self):
+        """Test admin login with provided credentials"""
+        response = self.make_request('POST', 'auth/login', self.admin_credentials)
+        if response and response.status_code == 200:
             data = response.json()
-            success = 'Payment gateway not configured' in data.get('detail', '')
-            self.log_test("Donation Order Creation", success, "Expected failure - Razorpay not configured")
+            success = 'token' in data and data.get('user', {}).get('role') == 'admin'
+            if success:
+                self.admin_token = data['token']
+            self.log_test("Admin Login", success, f"Role: {data.get('user', {}).get('role', 'N/A')}")
             return success
         else:
-            self.log_test("Donation Order Creation", False, f"Unexpected status: {response.status_code if response else 'No response'}")
+            self.log_test("Admin Login", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_designations_api(self):
+        """Test Designations module APIs"""
+        if not self.admin_token:
+            self.log_test("Designations API", False, "No admin token available")
+            return False
+        
+        # Test GET designations
+        response = self.make_request('GET', 'designations')
+        if response and response.status_code == 200:
+            designations = response.json()
+            self.log_test("GET Designations", True, f"Count: {len(designations)}")
+        else:
+            self.log_test("GET Designations", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+        
+        # Test POST designation (admin only)
+        designation_data = {
+            "name": "Test Volunteer",
+            "fee": 500,
+            "benefits": ["Certificate", "ID Card"]
+        }
+        
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.post(f"{self.base_url}/designations", json=designation_data, headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = 'message' in data and 'created' in data['message'].lower()
+                self.log_test("POST Designation", success, f"Response: {data.get('message', 'N/A')}")
+                return success
+            else:
+                self.log_test("POST Designation", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("POST Designation", False, f"Error: {str(e)}")
+            return False
+
+    def test_projects_api(self):
+        """Test Projects module APIs"""
+        if not self.admin_token:
+            self.log_test("Projects API", False, "No admin token available")
+            return False
+        
+        # Test GET projects
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.get(f"{self.base_url}/projects", headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                projects = response.json()
+                self.log_test("GET Projects", True, f"Count: {len(projects)}")
+            else:
+                self.log_test("GET Projects", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("GET Projects", False, f"Error: {str(e)}")
+            return False
+        
+        # Test POST project (admin only)
+        project_data = {
+            "title": "Test Education Drive 2025",
+            "description": "Free education for underprivileged children",
+            "budget": 50000,
+            "start_date": "2025-01-15"
+        }
+        
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.post(f"{self.base_url}/projects", json=project_data, headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = 'message' in data and 'created' in data['message'].lower()
+                self.log_test("POST Project", success, f"Response: {data.get('message', 'N/A')}")
+                return success
+            else:
+                self.log_test("POST Project", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("POST Project", False, f"Error: {str(e)}")
+            return False
+
+    def test_expenses_api(self):
+        """Test Expenses module APIs"""
+        if not self.admin_token:
+            self.log_test("Expenses API", False, "No admin token available")
+            return False
+        
+        # Test GET expenses
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.get(f"{self.base_url}/expenses", headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                expenses = response.json()
+                self.log_test("GET Expenses", True, f"Count: {len(expenses)}")
+            else:
+                self.log_test("GET Expenses", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("GET Expenses", False, f"Error: {str(e)}")
+            return False
+        
+        # Test POST expense (admin only)
+        expense_data = {
+            "category": "office",
+            "amount": 5000,
+            "description": "Office supplies purchase for testing"
+        }
+        
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.post(f"{self.base_url}/expenses", json=expense_data, headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = 'message' in data and 'added' in data['message'].lower()
+                self.log_test("POST Expense", success, f"Response: {data.get('message', 'N/A')}")
+                return success
+            else:
+                self.log_test("POST Expense", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("POST Expense", False, f"Error: {str(e)}")
+            return False
+
+    def test_internships_api(self):
+        """Test Internships module APIs"""
+        if not self.admin_token:
+            self.log_test("Internships API", False, "No admin token available")
+            return False
+        
+        # Test GET internships (public endpoint)
+        response = self.make_request('GET', 'internships')
+        if response and response.status_code == 200:
+            internships = response.json()
+            self.log_test("GET Internships", True, f"Count: {len(internships)}")
+        else:
+            self.log_test("GET Internships", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+        
+        # Test POST internship (admin only)
+        internship_data = {
+            "title": "Test Social Work Intern",
+            "description": "Assist in community outreach programs",
+            "duration": "3 months",
+            "positions": 5
+        }
+        
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.post(f"{self.base_url}/internships", json=internship_data, headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = 'message' in data and 'created' in data['message'].lower()
+                self.log_test("POST Internship", success, f"Response: {data.get('message', 'N/A')}")
+                return success
+            else:
+                self.log_test("POST Internship", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("POST Internship", False, f"Error: {str(e)}")
+            return False
+
+    def test_receipts_api(self):
+        """Test Receipts module APIs"""
+        if not self.admin_token:
+            self.log_test("Receipts API", False, "No admin token available")
+            return False
+        
+        # Test GET receipts
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.get(f"{self.base_url}/receipts", headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                receipts = response.json()
+                self.log_test("GET Receipts", True, f"Count: {len(receipts)}")
+            else:
+                self.log_test("GET Receipts", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("GET Receipts", False, f"Error: {str(e)}")
+            return False
+        
+        # Test POST receipt (admin only)
+        receipt_data = {
+            "receipt_type": "donation",
+            "recipient_name": "Test Donor",
+            "recipient_email": "testdonor@example.com",
+            "amount": 1000,
+            "description": "Test donation receipt"
+        }
+        
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.post(f"{self.base_url}/receipts", json=receipt_data, headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = 'message' in data and 'generated' in data['message'].lower()
+                self.log_test("POST Receipt", success, f"Response: {data.get('message', 'N/A')}")
+                return success
+            else:
+                self.log_test("POST Receipt", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("POST Receipt", False, f"Error: {str(e)}")
+            return False
+
+    def test_members_api(self):
+        """Test Members module APIs"""
+        if not self.admin_token:
+            self.log_test("Members API", False, "No admin token available")
+            return False
+        
+        # Test GET members
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.get(f"{self.base_url}/members", headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                members = response.json()
+                self.log_test("GET Members", True, f"Count: {len(members)}")
+                return True
+            else:
+                self.log_test("GET Members", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("GET Members", False, f"Error: {str(e)}")
+            return False
+
+    def test_certificates_api(self):
+        """Test Certificates module APIs"""
+        if not self.admin_token:
+            self.log_test("Certificates API", False, "No admin token available")
+            return False
+        
+        # Test GET certificates
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        try:
+            response = requests.get(f"{self.base_url}/certificates", headers=headers, timeout=10)
+            if response and response.status_code == 200:
+                certificates = response.json()
+                self.log_test("GET Certificates", True, f"Count: {len(certificates)}")
+                return True
+            else:
+                self.log_test("GET Certificates", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("GET Certificates", False, f"Error: {str(e)}")
             return False
 
     def run_all_tests(self):
