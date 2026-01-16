@@ -1126,22 +1126,130 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'beneficiaries' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Beneficiaries</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {beneficiaries.map((beneficiary, i) => (
-                      <div key={i} className="p-4 bg-stone-50 rounded-lg">
-                        <p className="font-semibold text-stone-900">{beneficiary.name}</p>
-                        <p className="text-sm text-stone-600">Category: {beneficiary.category}</p>
-                        <p className="text-sm text-stone-600">Address: {beneficiary.address}</p>
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Add Beneficiary</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleCreateBeneficiary} className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Name *</Label>
+                          <Input
+                            value={beneficiaryForm.name}
+                            onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, name: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label>Age</Label>
+                          <Input
+                            type="number"
+                            value={beneficiaryForm.age}
+                            onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, age: e.target.value })}
+                          />
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Gender</Label>
+                          <Select
+                            value={beneficiaryForm.gender}
+                            onValueChange={(value) => setBeneficiaryForm({ ...beneficiaryForm, gender: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Phone</Label>
+                          <Input
+                            value={beneficiaryForm.phone}
+                            onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, phone: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Category *</Label>
+                        <Select
+                          value={beneficiaryForm.category}
+                          onValueChange={(value) => setBeneficiaryForm({ ...beneficiaryForm, category: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="education">Education</SelectItem>
+                            <SelectItem value="medical">Medical</SelectItem>
+                            <SelectItem value="food">Food & Nutrition</SelectItem>
+                            <SelectItem value="clothing">Clothing</SelectItem>
+                            <SelectItem value="shelter">Shelter</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Address *</Label>
+                        <Input
+                          value={beneficiaryForm.address}
+                          onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, address: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={beneficiaryForm.description}
+                          onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, description: e.target.value })}
+                          rows={3}
+                          placeholder="Additional details about the beneficiary..."
+                        />
+                      </div>
+                      <Button type="submit" className="w-full">Add Beneficiary</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Beneficiaries</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {beneficiaries.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No beneficiaries yet</p>
+                      ) : (
+                        beneficiaries.map((beneficiary, i) => (
+                          <div key={i} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-semibold text-stone-900">{beneficiary.name}</p>
+                                {beneficiary.age && <p className="text-sm text-stone-600">Age: {beneficiary.age}</p>}
+                                <p className="text-sm text-stone-600">Category: {beneficiary.category}</p>
+                                <p className="text-sm text-stone-600">Address: {beneficiary.address}</p>
+                                {beneficiary.phone && <p className="text-sm text-stone-600">Phone: {beneficiary.phone}</p>}
+                                {beneficiary.description && (
+                                  <p className="text-sm text-stone-500 mt-2">{beneficiary.description}</p>
+                                )}
+                              </div>
+                              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                Active
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'reports' && (
