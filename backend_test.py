@@ -7,6 +7,7 @@ class NGOAPITester:
     def __init__(self, base_url="https://ngoboost.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
+        self.admin_token = None
         self.tests_run = 0
         self.tests_passed = 0
         self.test_user_email = f"test_{datetime.now().strftime('%H%M%S')}@example.com"
@@ -15,6 +16,11 @@ class NGOAPITester:
             "email": self.test_user_email,
             "phone": "9876543210",
             "password": "Test@123"
+        }
+        # Admin credentials from review request
+        self.admin_credentials = {
+            "email": "admin@nvpwelfare.in",
+            "password": "Admin@123"
         }
 
     def log_test(self, name, success, details=""):
