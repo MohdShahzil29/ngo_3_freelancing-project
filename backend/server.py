@@ -656,6 +656,152 @@ async def get_events():
     events = await db.events.find({}, {"_id": 0}).sort("event_date", 1).to_list(100)
     return events
 
+# ==================== PROJECT ROUTES ====================
+
+@api_router.post("/projects")
+async def create_project(project_data: dict, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can create projects")
+    
+    project = Project(**project_data)
+    doc = project.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['start_date'] = doc['start_date'].isoformat() if isinstance(doc['start_date'], datetime) else doc['start_date']
+    if doc.get('end_date'):
+        doc['end_date'] = doc['end_date'].isoformat() if isinstance(doc['end_date'], datetime) else doc['end_date']
+    await db.projects.insert_one(doc)
+    return {"message": "Project created", "id": project.id}
+
+@api_router.get("/projects")
+async def get_projects(user_data: dict = Depends(verify_token)):
+    projects = await db.projects.find({}, {"_id": 0}).to_list(1000)
+    return projects
+
+# ==================== EXPENSE ROUTES ====================
+
+@api_router.post("/expenses")
+async def create_expense(expense_data: dict, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can add expenses")
+    
+    expense = Expense(recorded_by=user_data['user_id'], **expense_data)
+    doc = expense.model_dump()
+    doc['date'] = doc['date'].isoformat()
+    await db.expenses.insert_one(doc)
+    return {"message": "Expense added", "id": expense.id}
+
+@api_router.get("/expenses")
+async def get_expenses(user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can view expenses")
+    expenses = await db.expenses.find({}, {"_id": 0}).sort("date", -1).to_list(1000)
+    return expenses
+
+# ==================== INTERNSHIP ROUTES ====================
+
+@api_router.post("/internships")
+async def create_internship(internship_data: dict, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can create internships")
+    
+    internship = Internship(**internship_data)
+    doc = internship.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.internships.insert_one(doc)
+    return {"message": "Internship created", "id": internship.id}
+
+@api_router.get("/internships")
+async def get_internships():
+    internships = await db.internships.find({}, {"_id": 0}).to_list(1000)
+    return internships
+
+@api_router.post("/internships/{internship_id}/apply")
+async def apply_internship(internship_id: str, application_data: dict, user_data: dict = Depends(verify_token)):
+    internship = await db.internships.find_one({"id": internship_id}, {"_id": 0})
+    if not internship:
+        raise HTTPException(status_code=404, detail="Internship not found")
+    
+    application = {
+        "applicant_id": user_data['user_id'],
+        "applicant_name": application_data.get('name'),
+        "applicant_email": application_data.get('email'),
+        "applicant_phone": application_data.get('phone'),
+        "applied_at": datetime.now(timezone.utc).isoformat(),
+        "status": "pending"
+    }
+    
+    await db.internships.update_one(
+        {"id": internship_id},
+        {"$push": {"applications": application}}
+    )
+    
+    return {"message": "Application submitted"}
+
+# ==================== DESIGNATION ROUTES ====================
+
+@api_router.post("/designations")
+async def create_designation(designation_data: dict, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can create designations")
+    
+    designation = Designation(**designation_data)
+    doc = designation.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.designations.insert_one(doc)
+    return {"message": "Designation created", "id": designation.id}
+
+@api_router.get("/designations")
+async def get_designations():
+    designations = await db.designations.find({}, {"_id": 0}).to_list(1000)
+    return designations
+
+# ==================== RECEIPT ROUTES ====================
+
+@api_router.post("/receipts")
+async def create_receipt(receipt_data: dict, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can create receipts")
+    
+    receipt_number = generate_receipt_number()
+    qr_data = f"https://nvpwelfare.in/verify-receipt/{receipt_number}"
+    qr_image = generate_qr_code(qr_data)
+    
+    receipt = {
+        "id": str(uuid.uuid4()),
+        "receipt_number": receipt_number,
+        "receipt_type": receipt_data.get('receipt_type'),
+        "recipient_name": receipt_data.get('recipient_name'),
+        "recipient_email": receipt_data.get('recipient_email'),
+        "amount": receipt_data.get('amount', 0),
+        "description": receipt_data.get('description'),
+        "qr_data": qr_data,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": user_data['user_id']
+    }
+    
+    await db.receipts.insert_one(receipt)
+    
+    # Send receipt email
+    html_content = f"""
+    <h2>Receipt - NVP Welfare Foundation India</h2>
+    <p>Dear {receipt['recipient_name']},</p>
+    <p><strong>Receipt Number:</strong> {receipt_number}</p>
+    <p><strong>Type:</strong> {receipt['receipt_type']}</p>
+    <p><strong>Amount:</strong> ₹{receipt['amount']}</p>
+    <p><strong>Description:</strong> {receipt['description']}</p>
+    <img src="{qr_image}" alt="QR Code" />
+    """
+    await send_email(receipt['recipient_email'], f"Receipt - {receipt_number}", html_content)
+    
+    return {"message": "Receipt generated", "receipt_number": receipt_number}
+
+@api_router.get("/receipts")
+async def get_receipts(user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can view receipts")
+    receipts = await db.receipts.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return receipts
+
 # ==================== STATS ROUTES ====================
 
 @api_router.get("/stats")
