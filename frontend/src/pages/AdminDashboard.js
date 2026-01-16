@@ -254,6 +254,22 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCreateBeneficiary = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API}/beneficiaries`, {
+        ...beneficiaryForm,
+        age: beneficiaryForm.age ? parseInt(beneficiaryForm.age) : null,
+        help_history: []
+      });
+      toast.success('Beneficiary added successfully!');
+      setBeneficiaryForm({ name: '', age: '', gender: '', address: '', phone: '', category: '', description: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to add beneficiary');
+    }
+  };
+
   const adminModules = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'members', label: 'Members', icon: Users },
