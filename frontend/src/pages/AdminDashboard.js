@@ -601,7 +601,7 @@ const AdminDashboard = () => {
                         <div>
                           <Label>Category</Label>
                           <Select
-                            value={expenseForm.category}
+                            value={expenseForm.category || ""}
                             onValueChange={(value) => setExpenseForm({ ...expenseForm, category: value })}
                           >
                             <SelectTrigger>
