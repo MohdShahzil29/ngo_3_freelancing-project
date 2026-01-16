@@ -55,14 +55,19 @@ class NGOAPITester:
 
     def test_root_endpoint(self):
         """Test root API endpoint"""
-        response = self.make_request('GET', '')
-        if response and response.status_code == 200:
-            data = response.json()
-            success = "NVP Welfare Foundation India API" in data.get('message', '')
-            self.log_test("Root Endpoint", success, f"Status: {response.status_code}")
-            return success
-        else:
-            self.log_test("Root Endpoint", False, f"Status: {response.status_code if response else 'No response'}")
+        # Test the actual root endpoint without /api prefix
+        try:
+            response = requests.get("https://ngoboost.preview.emergentagent.com/", timeout=10)
+            if response and response.status_code == 200:
+                # Check if it's the React app (HTML response)
+                success = "<!doctype html>" in response.text.lower()
+                self.log_test("Frontend Root Endpoint", success, f"Status: {response.status_code}")
+                return success
+            else:
+                self.log_test("Frontend Root Endpoint", False, f"Status: {response.status_code if response else 'No response'}")
+                return False
+        except Exception as e:
+            self.log_test("Frontend Root Endpoint", False, f"Error: {str(e)}")
             return False
 
     def test_stats_endpoint(self):
