@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Users, Heart, FileText, TrendingUp, Calendar, MessageSquare, 
   Award, FolderOpen, Briefcase, GraduationCap, DollarSign, 
-  BarChart3, Newspaper, Image, UserCheck, Receipt
+  BarChart3, Newspaper, Image, UserCheck, Receipt, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadCertificatePDF, downloadReceiptPDF } from '../utils/pdfGenerator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
