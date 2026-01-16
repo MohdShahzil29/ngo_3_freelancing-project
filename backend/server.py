@@ -606,7 +606,7 @@ async def create_enquiry(enquiry_data: dict):
     <p>We have received your enquiry and will get back to you soon.</p>
     <p>Your message: {enquiry.message}</p>
     """
-    await send_email(enquiry.email, "Enquiry Received - Star Marketing", html_content)
+    await send_email(enquiry.email, "Enquiry Received - NVP Welfare Foundation", html_content)
     
     return {"message": "Enquiry submitted successfully"}
 
