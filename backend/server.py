@@ -471,9 +471,9 @@ async def verify_donation_payment(payment_data: dict):
     <p>This donation is eligible for 80G tax benefits.</p>
     <img src="{qr_image}" alt="QR Code" />
     <p>Scan this QR code to verify your receipt.</p>
-    <p>Thank you for supporting our cause!</p>
+    <p>Thank you for supporting NVP Welfare Foundation India!</p>
     """
-    await send_email(donation['donor_email'], "Donation Receipt - Star Marketing", html_content)
+    await send_email(donation['donor_email'], "Donation Receipt - NVP Welfare Foundation", html_content)
     
     return {"message": "Payment verified and receipt sent", "receipt_number": donation['receipt_number']}
 
