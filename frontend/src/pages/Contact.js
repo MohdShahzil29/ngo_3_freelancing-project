@@ -134,7 +134,7 @@ const Contact = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     फोन
                   </h3>
-                  <p className="text-stone-600">90245 48020</p>
+                  <p className="text-stone-600">78776 43155</p>
                 </div>
               </div>
             </div>
@@ -148,7 +148,7 @@ const Contact = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     Email
                   </h3>
-                  <p className="text-stone-600">info@starmarketing.in</p>
+                  <p className="text-stone-600">info@nvpwelfare.in</p>
                 </div>
               </div>
             </div>
@@ -162,23 +162,9 @@ const Contact = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     पता
                   </h3>
-                  <p className="text-stone-600">Sikar, Rajasthan, India</p>
+                  <p className="text-stone-600">नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान</p>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-primary text-white rounded-xl shadow-lg p-8">
-              <h3 className="font-heading font-semibold text-xl mb-4">
-                Website
-              </h3>
-              <a
-                href="https://www.wingstarnarketing.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:underline"
-              >
-                https://www.wingstarnarketing.com
-              </a>
             </div>
           </div>
         </div>

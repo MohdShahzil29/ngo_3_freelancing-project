@@ -55,7 +55,7 @@ const Donate = () => {
         amount: amount,
         currency: currency,
         order_id: order_id,
-        name: 'Star Marketing NGO',
+        name: 'NVP Welfare Foundation India',
         description: formData.purpose || 'General Donation',
         handler: async function (response) {
           try {

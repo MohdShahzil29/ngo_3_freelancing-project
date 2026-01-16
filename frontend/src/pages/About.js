@@ -7,7 +7,7 @@ const About = () => {
             हमारे बारे में
           </h1>
           <p className="text-stone-600 text-base max-w-3xl mx-auto">
-            Star Marketing NGO एक पंजीकृत गैर-सरकारी संगठन है जो समाज के विकास के लिए काम कर रहा है।
+            NVP Welfare Foundation India एक पंजीकृत गैर-सरकारी संगठन है जो समाज के विकास के लिए काम कर रहा है।
           </p>
         </div>
 
@@ -30,19 +30,15 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-stone-900 mb-2">पता</h3>
-              <p className="text-stone-600">Sikar, Rajasthan, India</p>
+              <p className="text-stone-600">नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान</p>
             </div>
             <div>
               <h3 className="font-semibold text-stone-900 mb-2">फोन</h3>
-              <p className="text-stone-600">90245 48020</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-stone-900 mb-2">Website</h3>
-              <p className="text-stone-600">https://www.wingstarnarketing.com</p>
+              <p className="text-stone-600">78776 43155</p>
             </div>
             <div>
               <h3 className="font-semibold text-stone-900 mb-2">Email</h3>
-              <p className="text-stone-600">info@starmarketing.in</p>
+              <p className="text-stone-600">info@nvpwelfare.in</p>
             </div>
           </div>
         </div>
