@@ -907,10 +907,22 @@ const AdminDashboard = () => {
                             <p className="font-semibold text-stone-900">{receipt.receipt_number}</p>
                             <p className="text-sm text-stone-600">{receipt.recipient_name}</p>
                             <p className="text-xs text-stone-500">{receipt.description}</p>
+                            <p className="text-xs text-stone-400">Date: {new Date(receipt.created_at).toLocaleDateString()}</p>
                           </div>
-                          <div className="text-right">
-                            <p className="font-bold text-stone-900">₹{receipt.amount}</p>
-                            <p className="text-xs text-stone-500">{new Date(receipt.created_at).toLocaleDateString()}</p>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-right">
+                              <p className="font-bold text-stone-900">₹{receipt.amount}</p>
+                              <span className="text-xs text-stone-500">{receipt.receipt_type}</span>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => downloadReceiptPDF(receipt)}
+                              className="flex items-center space-x-2"
+                              data-testid={`download-receipt-${receipt.id}`}
+                            >
+                              <Download size={16} />
+                              <span>PDF</span>
+                            </Button>
                           </div>
                         </div>
                       ))}
