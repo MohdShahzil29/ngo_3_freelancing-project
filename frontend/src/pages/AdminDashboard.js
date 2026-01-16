@@ -65,7 +65,7 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [statsRes, membersRes, donationsRes, enquiriesRes, beneficiariesRes, projectsRes, expensesRes, internshipsRes, designationsRes, receiptsRes] = await Promise.all([
+      const [statsRes, membersRes, donationsRes, enquiriesRes, beneficiariesRes, projectsRes, expensesRes, internshipsRes, designationsRes, receiptsRes, certificatesRes] = await Promise.all([
         axios.get(`${API}/stats`),
         axios.get(`${API}/members`),
         axios.get(`${API}/donations`),
@@ -75,7 +75,8 @@ const AdminDashboard = () => {
         axios.get(`${API}/expenses`).catch(() => ({ data: [] })),
         axios.get(`${API}/internships`).catch(() => ({ data: [] })),
         axios.get(`${API}/designations`).catch(() => ({ data: [] })),
-        axios.get(`${API}/receipts`).catch(() => ({ data: [] }))
+        axios.get(`${API}/receipts`).catch(() => ({ data: [] })),
+        axios.get(`${API}/certificates`).catch(() => ({ data: [] }))
       ]);
       setStats(statsRes.data);
       setMembers(membersRes.data);
@@ -87,6 +88,7 @@ const AdminDashboard = () => {
       setInternships(internshipsRes.data);
       setDesignations(designationsRes.data);
       setReceipts(receiptsRes.data);
+      setCertificates(certificatesRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
