@@ -1040,38 +1040,74 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'certificates' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Generate Certificate</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleGenerateCertificate} className="space-y-4">
-                    <div>
-                      <Label>Certificate Type</Label>
-                      <Select value={certificateForm.certificate_type} onValueChange={(value) => setCertificateForm({ ...certificateForm, certificate_type: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="member">Member Certificate</SelectItem>
-                          <SelectItem value="visitor">Visitor Certificate</SelectItem>
-                          <SelectItem value="achievement">Achievement Certificate</SelectItem>
-                          <SelectItem value="internship">Internship Certificate</SelectItem>
-                        </SelectContent>
-                      </Select>
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Generate Certificate</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleGenerateCertificate} className="space-y-4">
+                      <div>
+                        <Label>Certificate Type</Label>
+                        <Select value={certificateForm.certificate_type} onValueChange={(value) => setCertificateForm({ ...certificateForm, certificate_type: value })}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="member">Member Certificate</SelectItem>
+                            <SelectItem value="visitor">Visitor Certificate</SelectItem>
+                            <SelectItem value="achievement">Achievement Certificate</SelectItem>
+                            <SelectItem value="internship">Internship Certificate</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Recipient Name</Label>
+                        <Input value={certificateForm.recipient_name} onChange={(e) => setCertificateForm({ ...certificateForm, recipient_name: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Recipient Email</Label>
+                        <Input type="email" value={certificateForm.recipient_email} onChange={(e) => setCertificateForm({ ...certificateForm, recipient_email: e.target.value })} required />
+                      </div>
+                      <Button type="submit" className="w-full">Generate & Send Certificate</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Certificates</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {certificates.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No certificates generated yet</p>
+                      ) : (
+                        certificates.map((cert, i) => (
+                          <div key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
+                            <div>
+                              <p className="font-semibold text-stone-900">{cert.recipient_name}</p>
+                              <p className="text-sm text-stone-600">{cert.recipient_email}</p>
+                              <p className="text-sm text-stone-500">Type: {cert.certificate_type}</p>
+                              <p className="text-xs text-stone-400">Cert No: {cert.certificate_number}</p>
+                              <p className="text-xs text-stone-400">Issued: {new Date(cert.issue_date).toLocaleDateString()}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => downloadCertificatePDF(cert)}
+                              className="flex items-center space-x-2"
+                              data-testid={`download-cert-${i}`}
+                            >
+                              <Download size={16} />
+                              <span>Download PDF</span>
+                            </Button>
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <div>
-                      <Label>Recipient Name</Label>
-                      <Input value={certificateForm.recipient_name} onChange={(e) => setCertificateForm({ ...certificateForm, recipient_name: e.target.value })} required />
-                    </div>
-                    <div>
-                      <Label>Recipient Email</Label>
-                      <Input type="email" value={certificateForm.recipient_email} onChange={(e) => setCertificateForm({ ...certificateForm, recipient_email: e.target.value })} required />
-                    </div>
-                    <Button type="submit" className="w-full">Generate & Send Certificate</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'donations' && (
