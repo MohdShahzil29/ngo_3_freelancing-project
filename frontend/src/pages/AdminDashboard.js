@@ -275,13 +275,13 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className=\"min-h-screen bg-stone-50\" data-testid=\"admin-dashboard\">
-      <div className=\"flex\">
+    <div className="min-h-screen bg-stone-50" data-testid="admin-dashboard">
+      <div className="flex">
         {/* Sidebar */}
-        <aside className=\"w-64 bg-white border-r border-stone-200 min-h-screen sticky top-0 overflow-y-auto\">
-          <div className=\"p-6\">
-            <h2 className=\"font-heading font-bold text-xl text-stone-900 mb-6\">Admin Panel</h2>
-            <nav className=\"space-y-1\">
+        <aside className="w-64 bg-white border-r border-stone-200 min-h-screen sticky top-0 overflow-y-auto">
+          <div className="p-6">
+            <h2 className="font-heading font-bold text-xl text-stone-900 mb-6">Admin Panel</h2>
+            <nav className="space-y-1">
               {adminModules.map((module) => {
                 const Icon = module.icon;
                 return (
