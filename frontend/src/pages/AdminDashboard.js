@@ -305,13 +305,13 @@ const AdminDashboard = () => {
         </aside>
 
         {/* Main Content */}
-        <main className=\"flex-1 p-8 overflow-y-auto\">
-          <div className=\"max-w-7xl mx-auto\">
-            <div className=\"mb-8\">
-              <h1 className=\"font-heading font-bold text-3xl text-stone-900 mb-2\">
+        <main className="flex-1 p-8 overflow-y-auto">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8">
+              <h1 className="font-heading font-bold text-3xl text-stone-900 mb-2">
                 {adminModules.find(m => m.id === activeTab)?.label || 'Dashboard'}
               </h1>
-              <p className=\"text-stone-600\">Welcome back, {user?.name}</p>
+              <p className="text-stone-600">Welcome back, {user?.name}</p>
             </div>
 
             {/* Overview Tab */}
