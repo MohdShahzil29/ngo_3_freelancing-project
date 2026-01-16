@@ -681,7 +681,7 @@ async def get_stats():
 # Root route
 @app.get("/")
 async def root():
-    return {"message": "Star Marketing NGO API", "status": "running"}
+    return {"message": "NVP Welfare Foundation India API", "status": "running"}
 
 # Include router
 app.include_router(api_router)
