@@ -628,7 +628,7 @@ async def create_beneficiary(beneficiary_data: dict, user_data: dict = Depends(v
     doc = beneficiary.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.beneficiaries.insert_one(doc)
-    return {"message": "Beneficiary added", "id": beneficiary.id}
+    return {"message": "Beneficiary added successfully", "id": beneficiary.id}
 
 @api_router.get("/beneficiaries")
 async def get_beneficiaries(user_data: dict = Depends(verify_token)):
@@ -636,6 +636,15 @@ async def get_beneficiaries(user_data: dict = Depends(verify_token)):
         raise HTTPException(status_code=403, detail="Only admins can view beneficiaries")
     beneficiaries = await db.beneficiaries.find({}, {"_id": 0}).to_list(1000)
     return beneficiaries
+
+@api_router.get("/beneficiaries/{beneficiary_id}")
+async def get_beneficiary(beneficiary_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can view beneficiaries")
+    beneficiary = await db.beneficiaries.find_one({"id": beneficiary_id}, {"_id": 0})
+    if not beneficiary:
+        raise HTTPException(status_code=404, detail="Beneficiary not found")
+    return beneficiary
 
 # ==================== EVENT ROUTES ====================
 
