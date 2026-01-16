@@ -58,7 +58,7 @@ class NGOAPITester:
         response = self.make_request('GET', '')
         if response and response.status_code == 200:
             data = response.json()
-            success = "Star Marketing NGO API" in data.get('message', '')
+            success = "NVP Welfare Foundation India API" in data.get('message', '')
             self.log_test("Root Endpoint", success, f"Status: {response.status_code}")
             return success
         else:
