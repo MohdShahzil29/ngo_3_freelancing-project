@@ -296,7 +296,7 @@ const AdminDashboard = () => {
                     data-testid={`admin-tab-${module.id}`}
                   >
                     <Icon size={20} />
-                    <span className=\"font-medium text-sm\">{module.label}</span>
+                    <span className="font-medium text-sm">{module.label}</span>
                   </button>
                 );
               })}
