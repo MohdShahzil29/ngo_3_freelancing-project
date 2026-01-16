@@ -522,7 +522,7 @@ async def generate_certificate(
     <p><strong>Type:</strong> {certificate.certificate_type}</p>
     <p>You can download your certificate from your dashboard.</p>
     """
-    await send_email(certificate.recipient_email, "Certificate Issued - Star Marketing", html_content)
+    await send_email(certificate.recipient_email, "Certificate Issued - NVP Welfare Foundation", html_content)
     
     return {"message": "Certificate generated", "certificate_number": cert_number}
 
