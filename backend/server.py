@@ -329,14 +329,14 @@ async def register(user_data: UserRegister):
     
     # Send welcome email
     html_content = f"""
-    <h2>Welcome to Star Marketing NGO!</h2>
+    <h2>Welcome to NVP Welfare Foundation India!</h2>
     <p>Dear {user.name},</p>
     <p>Your account has been successfully created.</p>
     <p>Email: {user.email}</p>
     <p>Role: {user.role}</p>
     <p>Thank you for joining us!</p>
     """
-    await send_email(user.email, "Welcome to Star Marketing", html_content)
+    await send_email(user.email, "Welcome to NVP Welfare Foundation", html_content)
     
     token = create_jwt_token(user.id, user.email, user.role)
     return {"token": token, "user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role}}
