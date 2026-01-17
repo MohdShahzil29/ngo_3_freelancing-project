@@ -552,6 +552,16 @@ async def get_news():
     news_list = await db.news.find({"published": True}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return news_list
 
+@api_router.delete("/news/{news_id}")
+async def delete_news(news_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete news")
+    
+    result = await db.news.delete_one({"id": news_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="News not found")
+    return {"message": "News deleted successfully"}
+
 # ==================== ACTIVITY ROUTES ====================
 
 @api_router.post("/activities")
