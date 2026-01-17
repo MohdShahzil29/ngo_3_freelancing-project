@@ -894,21 +894,28 @@ const AdminDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {designations.map((designation) => (
-                        <div key={designation.id} className="p-4 bg-stone-50 rounded-lg">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold text-stone-900">{designation.name}</h3>
-                              <p className="text-sm text-stone-600 mt-1">Fee: ₹{designation.fee}</p>
-                              {designation.benefits?.length > 0 && (
-                                <p className="text-xs text-stone-500 mt-2">
-                                  Benefits: {designation.benefits.join(', ')}
-                                </p>
-                              )}
+                      {designations.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No designations yet</p>
+                      ) : (
+                        designations.map((designation) => (
+                          <div key={designation.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-stone-900">{designation.name}</h3>
+                                <p className="text-sm text-stone-600 mt-1">Fee: ₹{designation.fee}</p>
+                                {designation.benefits?.length > 0 && (
+                                  <p className="text-xs text-stone-500 mt-2">
+                                    Benefits: {designation.benefits.join(', ')}
+                                  </p>
+                                )}
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteDesignation(designation.id)} data-testid={`delete-designation-${designation.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -989,31 +996,37 @@ const AdminDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {receipts.map((receipt) => (
-                        <div key={receipt.id} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
-                          <div>
-                            <p className="font-semibold text-stone-900">{receipt.receipt_number}</p>
-                            <p className="text-sm text-stone-600">{receipt.recipient_name}</p>
-                            <p className="text-xs text-stone-500">{receipt.description}</p>
-                            <p className="text-xs text-stone-400">Date: {new Date(receipt.created_at).toLocaleDateString()}</p>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <p className="font-bold text-stone-900">₹{receipt.amount}</p>
-                              <span className="text-xs text-stone-500">{receipt.receipt_type}</span>
+                      {receipts.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No receipts yet</p>
+                      ) : (
+                        receipts.map((receipt) => (
+                          <div key={receipt.id} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
+                            <div>
+                              <p className="font-semibold text-stone-900">{receipt.receipt_number}</p>
+                              <p className="text-sm text-stone-600">{receipt.recipient_name}</p>
+                              <p className="text-xs text-stone-500">{receipt.description}</p>
+                              <p className="text-xs text-stone-400">Date: {new Date(receipt.created_at).toLocaleDateString()}</p>
                             </div>
-                            <Button
-                              size="sm"
-                              onClick={() => downloadReceiptPDF(receipt)}
-                              className="flex items-center space-x-2"
-                              data-testid={`download-receipt-${receipt.id}`}
-                            >
-                              <Download size={16} />
-                              <span>PDF</span>
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                              <div className="text-right">
+                                <p className="font-bold text-stone-900">₹{receipt.amount}</p>
+                                <span className="text-xs text-stone-500">{receipt.receipt_type}</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => downloadReceiptPDF(receipt)}
+                                className="flex items-center space-x-2"
+                                data-testid={`download-receipt-${receipt.id}`}
+                              >
+                                <Download size={16} />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteReceipt(receipt.id)} data-testid={`delete-receipt-${receipt.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -1024,119 +1037,325 @@ const AdminDashboard = () => {
             {/* ... keeping existing implementations ... */}
 
             {activeTab === 'news' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create News</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateNews} className="space-y-4">
-                    <div>
-                      <Label>Title</Label>
-                      <Input value={newsForm.title} onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })} required />
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create News</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleCreateNews} className="space-y-4">
+                      <div>
+                        <Label>Title</Label>
+                        <Input value={newsForm.title} onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Content</Label>
+                        <Textarea value={newsForm.content} onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })} rows={5} required />
+                      </div>
+                      <div>
+                        <Label>Image</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, setNewsForm, newsForm, 'image_url')}
+                            disabled={uploading}
+                          />
+                          {uploading && <span className="text-sm text-stone-500">Uploading...</span>}
+                        </div>
+                        {newsForm.image_url && (
+                          <img src={newsForm.image_url} alt="Preview" className="mt-2 h-24 rounded-lg object-cover" />
+                        )}
+                      </div>
+                      <Button type="submit" className="w-full" disabled={uploading}>Publish News</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All News</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {news.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No news yet</p>
+                      ) : (
+                        news.map((item) => (
+                          <div key={item.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-4">
+                                {item.image_url && (
+                                  <img src={item.image_url} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold text-stone-900">{item.title}</h3>
+                                  <p className="text-sm text-stone-600 mt-1 line-clamp-2">{item.content}</p>
+                                  <p className="text-xs text-stone-400 mt-2">{new Date(item.created_at).toLocaleDateString()}</p>
+                                </div>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteNews(item.id)} data-testid={`delete-news-${item.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <div>
-                      <Label>Content</Label>
-                      <Textarea value={newsForm.content} onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })} rows={5} required />
-                    </div>
-                    <div>
-                      <Label>Image URL (Optional)</Label>
-                      <Input value={newsForm.image_url} onChange={(e) => setNewsForm({ ...newsForm, image_url: e.target.value })} />
-                    </div>
-                    <Button type="submit" className="w-full">Publish News</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'activities' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Post Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateActivity} className="space-y-4">
-                    <div>
-                      <Label>Title</Label>
-                      <Input value={activityForm.title} onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })} required />
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Post Activity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleCreateActivity} className="space-y-4">
+                      <div>
+                        <Label>Title</Label>
+                        <Input value={activityForm.title} onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea value={activityForm.description} onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })} rows={4} required />
+                      </div>
+                      <div>
+                        <Label>Image</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, setActivityForm, activityForm, 'image_url')}
+                            disabled={uploading}
+                          />
+                          {uploading && <span className="text-sm text-stone-500">Uploading...</span>}
+                        </div>
+                        {activityForm.image_url && (
+                          <img src={activityForm.image_url} alt="Preview" className="mt-2 h-24 rounded-lg object-cover" />
+                        )}
+                      </div>
+                      <Button type="submit" className="w-full" disabled={uploading}>Post Activity</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Activities</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {activities.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No activities yet</p>
+                      ) : (
+                        activities.map((item) => (
+                          <div key={item.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-4">
+                                {(item.images?.[0] || item.image_url) && (
+                                  <img src={item.images?.[0] || item.image_url} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold text-stone-900">{item.title}</h3>
+                                  <p className="text-sm text-stone-600 mt-1 line-clamp-2">{item.description}</p>
+                                  <p className="text-xs text-stone-400 mt-2">{new Date(item.created_at).toLocaleDateString()}</p>
+                                </div>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteActivity(item.id)} data-testid={`delete-activity-${item.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <div>
-                      <Label>Description</Label>
-                      <Textarea value={activityForm.description} onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })} rows={4} required />
-                    </div>
-                    <Button type="submit" className="w-full">Post Activity</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'campaigns' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create Campaign</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateCampaign} className="space-y-4">
-                    <div>
-                      <Label>Campaign Title</Label>
-                      <Input value={campaignForm.title} onChange={(e) => setCampaignForm({ ...campaignForm, title: e.target.value })} required />
-                    </div>
-                    <div>
-                      <Label>Description</Label>
-                      <Textarea value={campaignForm.description} onChange={(e) => setCampaignForm({ ...campaignForm, description: e.target.value })} rows={4} required />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create Campaign</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleCreateCampaign} className="space-y-4">
                       <div>
-                        <Label>Goal Amount (₹)</Label>
-                        <Input type="number" value={campaignForm.goal_amount} onChange={(e) => setCampaignForm({ ...campaignForm, goal_amount: e.target.value })} required />
+                        <Label>Campaign Title</Label>
+                        <Input value={campaignForm.title} onChange={(e) => setCampaignForm({ ...campaignForm, title: e.target.value })} required />
                       </div>
                       <div>
-                        <Label>Start Date</Label>
-                        <Input type="date" value={campaignForm.start_date} onChange={(e) => setCampaignForm({ ...campaignForm, start_date: e.target.value })} required />
+                        <Label>Description</Label>
+                        <Textarea value={campaignForm.description} onChange={(e) => setCampaignForm({ ...campaignForm, description: e.target.value })} rows={4} required />
                       </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Goal Amount (₹)</Label>
+                          <Input type="number" value={campaignForm.goal_amount} onChange={(e) => setCampaignForm({ ...campaignForm, goal_amount: e.target.value })} required />
+                        </div>
+                        <div>
+                          <Label>Start Date</Label>
+                          <Input type="date" value={campaignForm.start_date} onChange={(e) => setCampaignForm({ ...campaignForm, start_date: e.target.value })} required />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>End Date</Label>
+                        <Input type="date" value={campaignForm.end_date} onChange={(e) => setCampaignForm({ ...campaignForm, end_date: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Image</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, setCampaignForm, campaignForm, 'image_url')}
+                            disabled={uploading}
+                          />
+                          {uploading && <span className="text-sm text-stone-500">Uploading...</span>}
+                        </div>
+                        {campaignForm.image_url && (
+                          <img src={campaignForm.image_url} alt="Preview" className="mt-2 h-24 rounded-lg object-cover" />
+                        )}
+                      </div>
+                      <Button type="submit" className="w-full" disabled={uploading}>Create Campaign</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Campaigns</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {campaigns.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No campaigns yet</p>
+                      ) : (
+                        campaigns.map((item) => (
+                          <div key={item.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-4">
+                                {item.image_url && (
+                                  <img src={item.image_url} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold text-stone-900">{item.title}</h3>
+                                  <p className="text-sm text-stone-600 mt-1 line-clamp-2">{item.description}</p>
+                                  <div className="mt-2">
+                                    <div className="w-48 bg-stone-200 rounded-full h-2">
+                                      <div 
+                                        className="bg-primary h-2 rounded-full" 
+                                        style={{ width: `${Math.min((item.current_amount / item.goal_amount) * 100, 100)}%` }}
+                                      ></div>
+                                    </div>
+                                    <p className="text-xs text-stone-500 mt-1">₹{item.current_amount || 0} / ₹{item.goal_amount}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteCampaign(item.id)} data-testid={`delete-campaign-${item.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <div>
-                      <Label>End Date</Label>
-                      <Input type="date" value={campaignForm.end_date} onChange={(e) => setCampaignForm({ ...campaignForm, end_date: e.target.value })} required />
-                    </div>
-                    <Button type="submit" className="w-full">Create Campaign</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'events' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create Event</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateEvent} className="space-y-4">
-                    <div>
-                      <Label>Event Title</Label>
-                      <Input value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} required />
-                    </div>
-                    <div>
-                      <Label>Description</Label>
-                      <Textarea value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} rows={4} required />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create Event</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleCreateEvent} className="space-y-4">
                       <div>
-                        <Label>Event Date</Label>
-                        <Input type="datetime-local" value={eventForm.event_date} onChange={(e) => setEventForm({ ...eventForm, event_date: e.target.value })} required />
+                        <Label>Event Title</Label>
+                        <Input value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} required />
                       </div>
                       <div>
-                        <Label>Location</Label>
-                        <Input value={eventForm.location} onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })} required />
+                        <Label>Description</Label>
+                        <Textarea value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} rows={4} required />
                       </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Event Date</Label>
+                          <Input type="datetime-local" value={eventForm.event_date} onChange={(e) => setEventForm({ ...eventForm, event_date: e.target.value })} required />
+                        </div>
+                        <div>
+                          <Label>Location</Label>
+                          <Input value={eventForm.location} onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })} required />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Registration Fee (₹)</Label>
+                        <Input type="number" value={eventForm.registration_fee} onChange={(e) => setEventForm({ ...eventForm, registration_fee: e.target.value, is_paid: parseFloat(e.target.value) > 0 })} />
+                      </div>
+                      <div>
+                        <Label>Image</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, setEventForm, eventForm, 'image_url')}
+                            disabled={uploading}
+                          />
+                          {uploading && <span className="text-sm text-stone-500">Uploading...</span>}
+                        </div>
+                        {eventForm.image_url && (
+                          <img src={eventForm.image_url} alt="Preview" className="mt-2 h-24 rounded-lg object-cover" />
+                        )}
+                      </div>
+                      <Button type="submit" className="w-full" disabled={uploading}>Create Event</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Events</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {events.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No events yet</p>
+                      ) : (
+                        events.map((item) => (
+                          <div key={item.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-4">
+                                {item.image_url && (
+                                  <img src={item.image_url} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold text-stone-900">{item.title}</h3>
+                                  <p className="text-sm text-stone-600 mt-1">{item.location}</p>
+                                  <p className="text-xs text-stone-500 mt-1">
+                                    {new Date(item.event_date).toLocaleDateString()} - {item.is_paid ? `₹${item.registration_fee}` : 'Free'}
+                                  </p>
+                                </div>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteEvent(item.id)} data-testid={`delete-event-${item.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <div>
-                      <Label>Registration Fee (₹)</Label>
-                      <Input type="number" value={eventForm.registration_fee} onChange={(e) => setEventForm({ ...eventForm, registration_fee: e.target.value, is_paid: parseFloat(e.target.value) > 0 })} />
-                    </div>
-                    <Button type="submit" className="w-full">Create Event</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {activeTab === 'certificates' && (
