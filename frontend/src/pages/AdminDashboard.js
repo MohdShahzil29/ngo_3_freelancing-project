@@ -29,11 +29,13 @@ const AdminDashboard = () => {
   const [enquiries, setEnquiries] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [projects, setProjects] = useState([]);
-  const [expenses, setExpenses] = useState([]);
   const [internships, setInternships] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [receipts, setReceipts] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [news, setNews] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Forms state
