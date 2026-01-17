@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class NGOAPITester:
-    def __init__(self, base_url="https://ngoboost.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://nvpfoundation.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.admin_token = None
@@ -57,7 +57,7 @@ class NGOAPITester:
         """Test root API endpoint"""
         # Test the actual root endpoint without /api prefix
         try:
-            response = requests.get("https://ngoboost.preview.emergentagent.com/", timeout=10)
+            response = requests.get("https://nvpfoundation.preview.emergentagent.com/", timeout=10)
             if response and response.status_code == 200:
                 # Check if it's the React app (HTML response)
                 success = "<!doctype html>" in response.text.lower()
