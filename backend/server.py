@@ -580,6 +580,16 @@ async def get_activities():
     activities = await db.activities.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return activities
 
+@api_router.delete("/activities/{activity_id}")
+async def delete_activity(activity_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete activities")
+    
+    result = await db.activities.delete_one({"id": activity_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    return {"message": "Activity deleted successfully"}
+
 # ==================== CAMPAIGN ROUTES ====================
 
 @api_router.post("/campaigns")
