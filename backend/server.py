@@ -790,6 +790,15 @@ async def get_internships():
     internships = await db.internships.find({}, {"_id": 0}).to_list(1000)
     return internships
 
+@api_router.delete("/internships/{internship_id}")
+async def delete_internship(internship_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete internships")
+    result = await db.internships.delete_one({"id": internship_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Internship not found")
+    return {"message": "Internship deleted successfully"}
+
 @api_router.post("/internships/{internship_id}/apply")
 async def apply_internship(internship_id: str, application_data: dict, user_data: dict = Depends(verify_token)):
     internship = await db.internships.find_one({"id": internship_id}, {"_id": 0})
