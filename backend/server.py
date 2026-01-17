@@ -534,6 +534,15 @@ async def get_certificates(user_data: dict = Depends(verify_token)):
         certificates = await db.certificates.find({"recipient_email": user_data['email']}, {"_id": 0}).to_list(100)
     return certificates
 
+@api_router.delete("/certificates/{certificate_id}")
+async def delete_certificate(certificate_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete certificates")
+    result = await db.certificates.delete_one({"id": certificate_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    return {"message": "Certificate deleted successfully"}
+
 # ==================== NEWS ROUTES ====================
 
 @api_router.post("/news")
