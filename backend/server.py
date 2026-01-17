@@ -704,6 +704,15 @@ async def get_events():
     events = await db.events.find({}, {"_id": 0}).sort("event_date", 1).to_list(100)
     return events
 
+@api_router.delete("/events/{event_id}")
+async def delete_event(event_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete events")
+    result = await db.events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event deleted successfully"}
+
 # ==================== PROJECT ROUTES ====================
 
 @api_router.post("/projects")
