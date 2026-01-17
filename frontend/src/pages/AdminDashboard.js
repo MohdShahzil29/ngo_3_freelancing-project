@@ -531,13 +531,11 @@ const AdminDashboard = () => {
                   </Card>
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                      <CardTitle className="text-sm font-medium text-stone-600">Expenses</CardTitle>
-                      <DollarSign className="text-secondary" size={20} />
+                      <CardTitle className="text-sm font-medium text-stone-600">Beneficiaries</CardTitle>
+                      <UserCheck className="text-secondary" size={20} />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-stone-900">
-                        ₹{(expenses.reduce((sum, e) => sum + e.amount, 0) / 1000).toFixed(1)}K
-                      </div>
+                      <div className="text-2xl font-bold text-stone-900">{stats.total_beneficiaries || 0}</div>
                     </CardContent>
                   </Card>
                 </div>
