@@ -253,6 +253,167 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Latest News Section */}
+      {news.length > 0 && (
+        <section className="py-20 bg-white" data-testid="news-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
+                <Newspaper className="inline-block mr-2 text-primary" size={32} />
+                ताज़ा समाचार
+              </h2>
+              <p className="text-stone-600">हमारी नवीनतम खबरें और अपडेट</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {news.map((item, index) => (
+                <motion.div
+                  key={item.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-stone-50 rounded-xl border border-stone-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  data-testid={`news-card-${index}`}
+                >
+                  {item.image_url && (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <p className="text-xs text-stone-500 mb-2">
+                      {new Date(item.created_at).toLocaleDateString('hi-IN')}
+                    </p>
+                    <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-stone-600 text-sm line-clamp-3">{item.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Activities Section */}
+      {activities.length > 0 && (
+        <section className="py-20 bg-stone-50" data-testid="activities-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
+                <Calendar className="inline-block mr-2 text-primary" size={32} />
+                हमारी गतिविधियां
+              </h2>
+              <p className="text-stone-600">हाल की सामाजिक गतिविधियां</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {activities.map((item, index) => (
+                <motion.div
+                  key={item.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-xl border border-stone-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  data-testid={`activity-card-${index}`}
+                >
+                  {(item.images?.[0] || item.image_url) && (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={item.images?.[0] || item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <p className="text-xs text-stone-500 mb-2">
+                      {new Date(item.created_at).toLocaleDateString('hi-IN')}
+                    </p>
+                    <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-stone-600 text-sm line-clamp-3">{item.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Ongoing Campaigns Section */}
+      {campaigns.length > 0 && (
+        <section className="py-20 bg-white" data-testid="campaigns-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
+                <TrendingUp className="inline-block mr-2 text-primary" size={32} />
+                चल रहे अभियान
+              </h2>
+              <p className="text-stone-600">हमारे फंडरेज़िंग अभियानों में योगदान करें</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {campaigns.map((item, index) => (
+                <motion.div
+                  key={item.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-stone-50 rounded-xl border border-stone-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  data-testid={`campaign-card-${index}`}
+                >
+                  {item.image_url && (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-stone-600 text-sm line-clamp-2 mb-4">{item.description}</p>
+                    
+                    {/* Progress Bar */}
+                    <div className="mb-3">
+                      <div className="w-full bg-stone-200 rounded-full h-2">
+                        <div 
+                          className="bg-primary h-2 rounded-full transition-all duration-500" 
+                          style={{ width: `${Math.min((item.current_amount / item.goal_amount) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between mt-2 text-sm">
+                        <span className="text-stone-600">₹{item.current_amount || 0}</span>
+                        <span className="text-stone-900 font-semibold">₹{item.goal_amount}</span>
+                      </div>
+                    </div>
+                    
+                    <Link to="/donate">
+                      <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
+                        दान करें <Heart className="ml-2" size={16} />
+                      </Button>
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
