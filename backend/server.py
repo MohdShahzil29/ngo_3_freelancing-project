@@ -685,6 +685,15 @@ async def get_beneficiary(beneficiary_id: str, user_data: dict = Depends(verify_
         raise HTTPException(status_code=404, detail="Beneficiary not found")
     return beneficiary
 
+@api_router.delete("/beneficiaries/{beneficiary_id}")
+async def delete_beneficiary(beneficiary_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete beneficiaries")
+    result = await db.beneficiaries.delete_one({"id": beneficiary_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Beneficiary not found")
+    return {"message": "Beneficiary deleted successfully"}
+
 # ==================== EVENT ROUTES ====================
 
 @api_router.post("/events")
