@@ -1403,7 +1403,7 @@ const AdminDashboard = () => {
                         <p className="text-stone-600 text-center py-8">No certificates generated yet</p>
                       ) : (
                         certificates.map((cert, i) => (
-                          <div key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
+                          <div key={cert.id || i} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
                             <div>
                               <p className="font-semibold text-stone-900">{cert.recipient_name}</p>
                               <p className="text-sm text-stone-600">{cert.recipient_email}</p>
@@ -1411,15 +1411,18 @@ const AdminDashboard = () => {
                               <p className="text-xs text-stone-400">Cert No: {cert.certificate_number}</p>
                               <p className="text-xs text-stone-400">Issued: {new Date(cert.issue_date).toLocaleDateString()}</p>
                             </div>
-                            <Button
-                              size="sm"
-                              onClick={() => downloadCertificatePDF(cert)}
-                              className="flex items-center space-x-2"
-                              data-testid={`download-cert-${i}`}
-                            >
-                              <Download size={16} />
-                              <span>Download PDF</span>
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                size="sm"
+                                onClick={() => downloadCertificatePDF(cert)}
+                                data-testid={`download-cert-${cert.id || i}`}
+                              >
+                                <Download size={16} />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteCertificate(cert.id)} data-testid={`delete-cert-${cert.id || i}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
                           </div>
                         ))
                       )}
@@ -1436,19 +1439,28 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {donations.map((donation, i) => (
-                      <div key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
-                        <div>
-                          <p className="font-semibold text-stone-900">{donation.donor_name}</p>
-                          <p className="text-sm text-stone-600">{donation.donor_email}</p>
-                          <p className="text-sm text-stone-500">Receipt: {donation.receipt_number}</p>
+                    {donations.length === 0 ? (
+                      <p className="text-stone-600 text-center py-8">No donations yet</p>
+                    ) : (
+                      donations.map((donation, i) => (
+                        <div key={donation.id || i} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
+                          <div>
+                            <p className="font-semibold text-stone-900">{donation.donor_name}</p>
+                            <p className="text-sm text-stone-600">{donation.donor_email}</p>
+                            <p className="text-sm text-stone-500">Receipt: {donation.receipt_number}</p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="text-right">
+                              <p className="font-semibold text-stone-900">₹{donation.amount}</p>
+                              <p className="text-sm text-stone-600">{new Date(donation.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteDonation(donation.id)} data-testid={`delete-donation-${donation.id || i}`}>
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-stone-900">₹{donation.amount}</p>
-                          <p className="text-sm text-stone-600">{new Date(donation.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -1582,7 +1594,7 @@ const AdminDashboard = () => {
                         <p className="text-stone-600 text-center py-8">No beneficiaries yet</p>
                       ) : (
                         beneficiaries.map((beneficiary, i) => (
-                          <div key={i} className="p-4 bg-stone-50 rounded-lg">
+                          <div key={beneficiary.id || i} className="p-4 bg-stone-50 rounded-lg">
                             <div className="flex justify-between items-start">
                               <div>
                                 <p className="font-semibold text-stone-900">{beneficiary.name}</p>
@@ -1594,9 +1606,14 @@ const AdminDashboard = () => {
                                   <p className="text-sm text-stone-500 mt-2">{beneficiary.description}</p>
                                 )}
                               </div>
-                              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                                Active
-                              </span>
+                              <div className="flex items-center space-x-2">
+                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                  Active
+                                </span>
+                                <Button size="sm" variant="destructive" onClick={() => handleDeleteBeneficiary(beneficiary.id)} data-testid={`delete-beneficiary-${beneficiary.id || i}`}>
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))
