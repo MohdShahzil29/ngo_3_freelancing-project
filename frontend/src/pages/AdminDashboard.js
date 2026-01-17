@@ -10,8 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Users, Heart, FileText, TrendingUp, Calendar, MessageSquare, 
-  Award, FolderOpen, Briefcase, GraduationCap, DollarSign, 
-  BarChart3, Newspaper, Image, UserCheck, Receipt, Download
+  Award, FolderOpen, Briefcase, GraduationCap, 
+  BarChart3, Newspaper, Image, UserCheck, Receipt, Download, Trash2, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { downloadCertificatePDF, downloadReceiptPDF } from '../utils/pdfGenerator';
@@ -36,7 +36,9 @@ const AdminDashboard = () => {
   const [news, setNews] = useState([]);
   const [activities, setActivities] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   // Forms state
   const [beneficiaryForm, setBeneficiaryForm] = useState({
@@ -47,12 +49,11 @@ const AdminDashboard = () => {
     address: '', city: '', state: '', pincode: '', phone: '' 
   });
   const [newsForm, setNewsForm] = useState({ title: '', content: '', image_url: '' });
-  const [activityForm, setActivityForm] = useState({ title: '', description: '', images: [] });
-  const [campaignForm, setCampaignForm] = useState({ title: '', description: '', goal_amount: '', start_date: '', end_date: '' });
-  const [eventForm, setEventForm] = useState({ title: '', description: '', event_date: '', location: '', registration_fee: 0, is_paid: false });
+  const [activityForm, setActivityForm] = useState({ title: '', description: '', image_url: '' });
+  const [campaignForm, setCampaignForm] = useState({ title: '', description: '', goal_amount: '', start_date: '', end_date: '', image_url: '' });
+  const [eventForm, setEventForm] = useState({ title: '', description: '', event_date: '', location: '', registration_fee: 0, is_paid: false, image_url: '' });
   const [certificateForm, setCertificateForm] = useState({ certificate_type: 'member', recipient_name: '', recipient_email: '', template_id: 'default' });
   const [projectForm, setProjectForm] = useState({ title: '', description: '', budget: '', start_date: '' });
-  const [expenseForm, setExpenseForm] = useState({ category: '', amount: '', description: '', project_id: '' });
   const [internshipForm, setInternshipForm] = useState({ title: '', description: '', duration: '', positions: 1 });
   const [designationForm, setDesignationForm] = useState({ name: '', fee: '', benefits: [] });
   const [receiptForm, setReceiptForm] = useState({ receipt_type: 'donation', recipient_name: '', recipient_email: '', amount: '', description: '' });
@@ -67,18 +68,21 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [statsRes, membersRes, donationsRes, enquiriesRes, beneficiariesRes, projectsRes, expensesRes, internshipsRes, designationsRes, receiptsRes, certificatesRes] = await Promise.all([
+      const [statsRes, membersRes, donationsRes, enquiriesRes, beneficiariesRes, projectsRes, internshipsRes, designationsRes, receiptsRes, certificatesRes, newsRes, activitiesRes, campaignsRes, eventsRes] = await Promise.all([
         axios.get(`${API}/stats`),
         axios.get(`${API}/members`),
         axios.get(`${API}/donations`),
         axios.get(`${API}/enquiries`),
         axios.get(`${API}/beneficiaries`),
         axios.get(`${API}/projects`).catch(() => ({ data: [] })),
-        axios.get(`${API}/expenses`).catch(() => ({ data: [] })),
         axios.get(`${API}/internships`).catch(() => ({ data: [] })),
         axios.get(`${API}/designations`).catch(() => ({ data: [] })),
         axios.get(`${API}/receipts`).catch(() => ({ data: [] })),
-        axios.get(`${API}/certificates`).catch(() => ({ data: [] }))
+        axios.get(`${API}/certificates`).catch(() => ({ data: [] })),
+        axios.get(`${API}/news`).catch(() => ({ data: [] })),
+        axios.get(`${API}/activities`).catch(() => ({ data: [] })),
+        axios.get(`${API}/campaigns`).catch(() => ({ data: [] })),
+        axios.get(`${API}/events`).catch(() => ({ data: [] }))
       ]);
       setStats(statsRes.data);
       setMembers(membersRes.data);
@@ -86,11 +90,14 @@ const AdminDashboard = () => {
       setEnquiries(enquiriesRes.data);
       setBeneficiaries(beneficiariesRes.data);
       setProjects(projectsRes.data);
-      setExpenses(expensesRes.data);
       setInternships(internshipsRes.data);
       setDesignations(designationsRes.data);
       setReceipts(receiptsRes.data);
       setCertificates(certificatesRes.data);
+      setNews(newsRes.data);
+      setActivities(activitiesRes.data);
+      setCampaigns(campaignsRes.data);
+      setEvents(eventsRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -123,12 +130,180 @@ const AdminDashboard = () => {
   const handleCreateActivity = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API}/activities`, { ...activityForm, author_id: user.id });
+      await axios.post(`${API}/activities`, { ...activityForm, author_id: user.id, images: activityForm.image_url ? [activityForm.image_url] : [] });
       toast.success('Activity posted successfully!');
-      setActivityForm({ title: '', description: '', images: [] });
+      setActivityForm({ title: '', description: '', image_url: '' });
       fetchData();
     } catch (error) {
       toast.error('Failed to post activity');
+    }
+  };
+
+  // Image upload handler
+  const handleImageUpload = async (e, formSetter, formState, fieldName = 'image_url') => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('कृपया केवल इमेज फाइल अपलोड करें');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('इमेज का साइज 5MB से कम होना चाहिए');
+      return;
+    }
+    
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(`${API}/upload-image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      formSetter({ ...formState, [fieldName]: response.data.url });
+      toast.success('इमेज अपलोड हो गई!');
+    } catch (error) {
+      toast.error('इमेज अपलोड करने में समस्या हुई');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Delete handlers
+  const handleDeleteMember = async (memberId) => {
+    if (!window.confirm('क्या आप इस सदस्य को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/members/${memberId}`);
+      toast.success('सदस्य हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('सदस्य हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteNews = async (newsId) => {
+    if (!window.confirm('क्या आप इस समाचार को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/news/${newsId}`);
+      toast.success('समाचार हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('समाचार हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteActivity = async (activityId) => {
+    if (!window.confirm('क्या आप इस गतिविधि को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/activities/${activityId}`);
+      toast.success('गतिविधि हटा दी गई');
+      fetchData();
+    } catch (error) {
+      toast.error('गतिविधि हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteCampaign = async (campaignId) => {
+    if (!window.confirm('क्या आप इस अभियान को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/campaigns/${campaignId}`);
+      toast.success('अभियान हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('अभियान हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('क्या आप इस इवेंट को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/events/${eventId}`);
+      toast.success('इवेंट हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('इवेंट हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteBeneficiary = async (beneficiaryId) => {
+    if (!window.confirm('क्या आप इस लाभार्थी को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/beneficiaries/${beneficiaryId}`);
+      toast.success('लाभार्थी हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('लाभार्थी हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!window.confirm('क्या आप इस प्रोजेक्ट को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/projects/${projectId}`);
+      toast.success('प्रोजेक्ट हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('प्रोजेक्ट हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteInternship = async (internshipId) => {
+    if (!window.confirm('क्या आप इस इंटर्नशिप को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/internships/${internshipId}`);
+      toast.success('इंटर्नशिप हटा दी गई');
+      fetchData();
+    } catch (error) {
+      toast.error('इंटर्नशिप हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteDesignation = async (designationId) => {
+    if (!window.confirm('क्या आप इस पद को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/designations/${designationId}`);
+      toast.success('पद हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('पद हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteReceipt = async (receiptId) => {
+    if (!window.confirm('क्या आप इस रसीद को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/receipts/${receiptId}`);
+      toast.success('रसीद हटा दी गई');
+      fetchData();
+    } catch (error) {
+      toast.error('रसीद हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteCertificate = async (certificateId) => {
+    if (!window.confirm('क्या आप इस प्रमाणपत्र को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/certificates/${certificateId}`);
+      toast.success('प्रमाणपत्र हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('प्रमाणपत्र हटाने में समस्या हुई');
+    }
+  };
+
+  const handleDeleteDonation = async (donationId) => {
+    if (!window.confirm('क्या आप इस दान रिकॉर्ड को हटाना चाहते हैं?')) return;
+    try {
+      await axios.delete(`${API}/donations/${donationId}`);
+      toast.success('दान रिकॉर्ड हटा दिया गया');
+      fetchData();
+    } catch (error) {
+      toast.error('दान रिकॉर्ड हटाने में समस्या हुई');
     }
   };
 
@@ -142,7 +317,7 @@ const AdminDashboard = () => {
         status: 'active'
       });
       toast.success('Campaign created successfully!');
-      setCampaignForm({ title: '', description: '', goal_amount: '', start_date: '', end_date: '' });
+      setCampaignForm({ title: '', description: '', goal_amount: '', start_date: '', end_date: '', image_url: '' });
       fetchData();
     } catch (error) {
       toast.error('Failed to create campaign');
@@ -159,7 +334,7 @@ const AdminDashboard = () => {
         registered_count: 0
       });
       toast.success('Event created successfully!');
-      setEventForm({ title: '', description: '', event_date: '', location: '', registration_fee: 0, is_paid: false });
+      setEventForm({ title: '', description: '', event_date: '', location: '', registration_fee: 0, is_paid: false, image_url: '' });
       fetchData();
     } catch (error) {
       toast.error('Failed to create event');
@@ -192,21 +367,6 @@ const AdminDashboard = () => {
       fetchData();
     } catch (error) {
       toast.error('Failed to create project');
-    }
-  };
-
-  const handleCreateExpense = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API}/expenses`, {
-        ...expenseForm,
-        amount: parseFloat(expenseForm.amount)
-      });
-      toast.success('Expense added successfully!');
-      setExpenseForm({ category: '', amount: '', description: '', project_id: '' });
-      fetchData();
-    } catch (error) {
-      toast.error('Failed to add expense');
     }
   };
 
@@ -284,7 +444,6 @@ const AdminDashboard = () => {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'enquiries', label: 'Enquiries', icon: MessageSquare },
     { id: 'projects', label: 'Projects', icon: FolderOpen },
-    { id: 'expenses', label: 'Expenses', icon: DollarSign },
     { id: 'internships', label: 'Internships', icon: GraduationCap },
     { id: 'designations', label: 'Designations', icon: Briefcase },
     { id: 'receipts', label: 'Receipts', icon: Receipt },
