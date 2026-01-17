@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Users, HandHeart, TrendingUp, ArrowRight, CheckCircle } from 'lucide-react';
+import { Heart, Users, HandHeart, TrendingUp, ArrowRight, CheckCircle, Newspaper, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -18,11 +18,13 @@ const Home = () => {
   });
   const [news, setNews] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     fetchStats();
     fetchNews();
     fetchActivities();
+    fetchCampaigns();
   }, []);
 
   const fetchStats = async () => {
@@ -49,6 +51,15 @@ const Home = () => {
       setActivities(response.data.slice(0, 3));
     } catch (error) {
       console.error('Failed to fetch activities:', error);
+    }
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+      const response = await axios.get(`${API}/campaigns`);
+      setCampaigns(response.data.slice(0, 3));
+    } catch (error) {
+      console.error('Failed to fetch campaigns:', error);
     }
   };
 
