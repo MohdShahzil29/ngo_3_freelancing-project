@@ -895,6 +895,15 @@ async def get_receipts(user_data: dict = Depends(verify_token)):
     receipts = await db.receipts.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return receipts
 
+@api_router.delete("/receipts/{receipt_id}")
+async def delete_receipt(receipt_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete receipts")
+    result = await db.receipts.delete_one({"id": receipt_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+    return {"message": "Receipt deleted successfully"}
+
 # ==================== STATS ROUTES ====================
 
 @api_router.get("/stats")
