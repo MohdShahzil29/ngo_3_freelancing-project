@@ -839,6 +839,15 @@ async def get_designations():
     designations = await db.designations.find({}, {"_id": 0}).to_list(1000)
     return designations
 
+@api_router.delete("/designations/{designation_id}")
+async def delete_designation(designation_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete designations")
+    result = await db.designations.delete_one({"id": designation_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Designation not found")
+    return {"message": "Designation deleted successfully"}
+
 # ==================== RECEIPT ROUTES ====================
 
 @api_router.post("/receipts")
