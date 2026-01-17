@@ -818,19 +818,30 @@ const AdminDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {internships.map((internship) => (
-                        <div key={internship.id} className="p-4 bg-stone-50 rounded-lg">
-                          <h3 className="font-semibold text-stone-900">{internship.title}</h3>
-                          <p className="text-sm text-stone-600 mt-2">{internship.description}</p>
-                          <div className="flex justify-between items-center mt-4">
-                            <span className="text-sm text-stone-600">Duration: {internship.duration}</span>
-                            <span className="text-sm text-stone-600">Positions: {internship.positions}</span>
-                            <span className="text-sm text-stone-600">
-                              Applications: {internship.applications?.length || 0}
-                            </span>
+                      {internships.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No internships yet</p>
+                      ) : (
+                        internships.map((internship) => (
+                          <div key={internship.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-stone-900">{internship.title}</h3>
+                                <p className="text-sm text-stone-600 mt-2">{internship.description}</p>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteInternship(internship.id)} data-testid={`delete-internship-${internship.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                              <span className="text-sm text-stone-600">Duration: {internship.duration}</span>
+                              <span className="text-sm text-stone-600">Positions: {internship.positions}</span>
+                              <span className="text-sm text-stone-600">
+                                Applications: {internship.applications?.length || 0}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
