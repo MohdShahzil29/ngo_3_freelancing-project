@@ -200,17 +200,6 @@ class Project(BaseModel):
     status: str = "active"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class Expense(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    category: str
-    amount: float
-    description: str
-    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    project_id: Optional[str] = None
-    receipt_url: Optional[str] = None
-    recorded_by: str
-
 class Enquiry(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
