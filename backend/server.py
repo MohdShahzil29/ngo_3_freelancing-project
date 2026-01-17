@@ -734,6 +734,15 @@ async def get_projects(user_data: dict = Depends(verify_token)):
     projects = await db.projects.find({}, {"_id": 0}).to_list(1000)
     return projects
 
+@api_router.delete("/projects/{project_id}")
+async def delete_project(project_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete projects")
+    result = await db.projects.delete_one({"id": project_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"message": "Project deleted successfully"}
+
 # ==================== EXPENSE ROUTES ====================
 
 @api_router.post("/expenses")
