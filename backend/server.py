@@ -752,26 +752,6 @@ async def delete_project(project_id: str, user_data: dict = Depends(verify_token
         raise HTTPException(status_code=404, detail="Project not found")
     return {"message": "Project deleted successfully"}
 
-# ==================== EXPENSE ROUTES ====================
-
-@api_router.post("/expenses")
-async def create_expense(expense_data: dict, user_data: dict = Depends(verify_token)):
-    if user_data['role'] != 'admin':
-        raise HTTPException(status_code=403, detail="Only admins can add expenses")
-    
-    expense = Expense(recorded_by=user_data['user_id'], **expense_data)
-    doc = expense.model_dump()
-    doc['date'] = doc['date'].isoformat()
-    await db.expenses.insert_one(doc)
-    return {"message": "Expense added", "id": expense.id}
-
-@api_router.get("/expenses")
-async def get_expenses(user_data: dict = Depends(verify_token)):
-    if user_data['role'] != 'admin':
-        raise HTTPException(status_code=403, detail="Only admins can view expenses")
-    expenses = await db.expenses.find({}, {"_id": 0}).sort("date", -1).to_list(1000)
-    return expenses
-
 # ==================== INTERNSHIP ROUTES ====================
 
 @api_router.post("/internships")
