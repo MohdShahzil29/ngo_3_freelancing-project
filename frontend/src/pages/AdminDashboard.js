@@ -652,7 +652,7 @@ const AdminDashboard = () => {
                                 </Button>
                               )}
                               {member.status === 'approved' && (
-                                <Button size="sm" variant="destructive" onClick={() => handleUpdateMemberStatus(member.id, 'blocked')}>
+                                <Button size="sm" variant="outline" onClick={() => handleUpdateMemberStatus(member.id, 'blocked')}>
                                   Block
                                 </Button>
                               )}
@@ -661,6 +661,9 @@ const AdminDashboard = () => {
                                   Unblock
                                 </Button>
                               )}
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteMember(member.id)} data-testid={`delete-member-${member.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
                             </div>
                           </div>
                         ))}
@@ -728,115 +731,30 @@ const AdminDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {projects.map((project) => (
-                        <div key={project.id} className="p-4 bg-stone-50 rounded-lg">
-                          <h3 className="font-semibold text-stone-900">{project.title}</h3>
-                          <p className="text-sm text-stone-600 mt-2">{project.description}</p>
-                          <div className="flex justify-between items-center mt-4">
-                            <span className="text-sm text-stone-600">Budget: ₹{project.budget}</span>
-                            <span className="text-sm text-stone-600">Spent: ₹{project.spent}</span>
-                            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                              {project.status}
-                            </span>
+                      {projects.length === 0 ? (
+                        <p className="text-stone-600 text-center py-8">No projects yet</p>
+                      ) : (
+                        projects.map((project) => (
+                          <div key={project.id} className="p-4 bg-stone-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-stone-900">{project.title}</h3>
+                                <p className="text-sm text-stone-600 mt-2">{project.description}</p>
+                              </div>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteProject(project.id)} data-testid={`delete-project-${project.id}`}>
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                              <span className="text-sm text-stone-600">Budget: ₹{project.budget}</span>
+                              <span className="text-sm text-stone-600">Spent: ₹{project.spent}</span>
+                              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                {project.status}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* Expenses Tab */}
-            {activeTab === 'expenses' && (
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Add Expense</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleCreateExpense} className="space-y-4">
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <Label>Category</Label>
-                          <Select
-                            value={expenseForm.category || ""}
-                            onValueChange={(value) => setExpenseForm({ ...expenseForm, category: value })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="office">Office Expenses</SelectItem>
-                              <SelectItem value="travel">Travel</SelectItem>
-                              <SelectItem value="supplies">Supplies</SelectItem>
-                              <SelectItem value="utilities">Utilities</SelectItem>
-                              <SelectItem value="salaries">Salaries</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Amount (₹)</Label>
-                          <Input
-                            type="number"
-                            value={expenseForm.amount}
-                            onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label>Description</Label>
-                        <Textarea
-                          value={expenseForm.description}
-                          onChange={(e) => setExpenseForm({ ...expenseForm, description: e.target.value })}
-                          rows={3}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label>Project (Optional)</Label>
-                        <Select
-                          value={expenseForm.project_id}
-                          onValueChange={(value) => setExpenseForm({ ...expenseForm, project_id: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select project" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">No Project</SelectItem>
-                            {projects.map((p) => (
-                              <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Button type="submit" className="w-full">Add Expense</Button>
-                    </form>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Expense Records</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {expenses.map((expense) => (
-                        <div key={expense.id} className="flex justify-between items-center p-4 bg-stone-50 rounded-lg">
-                          <div>
-                            <p className="font-semibold text-stone-900">{expense.category}</p>
-                            <p className="text-sm text-stone-600">{expense.description}</p>
-                            <p className="text-xs text-stone-500 mt-1">
-                              {new Date(expense.date).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold text-stone-900">₹{expense.amount}</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
