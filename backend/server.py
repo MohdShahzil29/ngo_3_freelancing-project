@@ -895,6 +895,72 @@ async def get_stats():
         "total_campaigns": total_campaigns
     }
 
+# ==================== IMAGE UPLOAD ROUTES ====================
+
+# Create uploads directory
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+@api_router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    """Upload an image and return its URL"""
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.")
+    
+    # Generate unique filename
+    file_ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    unique_filename = f"{uuid.uuid4().hex}.{file_ext}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    # Return URL (this will be served statically)
+    return {"url": f"/api/uploads/{unique_filename}", "filename": unique_filename}
+
+from fastapi.responses import FileResponse
+
+@api_router.get("/uploads/{filename}")
+async def get_uploaded_file(filename: str):
+    """Serve uploaded files"""
+    file_path = UPLOAD_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(file_path)
+
+# ==================== ADDITIONAL DELETE ROUTES ====================
+
+@api_router.delete("/members/{member_id}")
+async def delete_member(member_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete members")
+    result = await db.members.delete_one({"id": member_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"message": "Member deleted successfully"}
+
+@api_router.delete("/donations/{donation_id}")
+async def delete_donation(donation_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete donations")
+    result = await db.donations.delete_one({"id": donation_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Donation not found")
+    return {"message": "Donation deleted successfully"}
+
+@api_router.delete("/certificates/{certificate_id}")
+async def delete_certificate(certificate_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete certificates")
+    result = await db.certificates.delete_one({"id": certificate_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    return {"message": "Certificate deleted successfully"}
+
 # Root route
 @app.get("/")
 async def root():
