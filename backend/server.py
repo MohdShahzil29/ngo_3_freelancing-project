@@ -610,6 +610,16 @@ async def get_campaigns():
     campaigns = await db.campaigns.find({"status": "active"}, {"_id": 0}).to_list(100)
     return campaigns
 
+@api_router.delete("/campaigns/{campaign_id}")
+async def delete_campaign(campaign_id: str, user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete campaigns")
+    
+    result = await db.campaigns.delete_one({"id": campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return {"message": "Campaign deleted successfully"}
+
 # ==================== ENQUIRY ROUTES ====================
 
 @api_router.post("/enquiries")
