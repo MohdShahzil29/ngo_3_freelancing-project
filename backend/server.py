@@ -55,7 +55,8 @@ JWT_ALGORITHM = 'HS256'
 # Create the main app
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
-security = HTTPBearer()
+# security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 # ==================== MODELS ====================
 
