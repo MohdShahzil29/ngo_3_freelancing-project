@@ -967,7 +967,7 @@ async def root():
     return {"message": "NVP Welfare Foundation India API", "status": "running"}
 
 # Include router
-app.include_router(api_router)
+# app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -976,6 +976,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(api_router)
+
 
 logging.basicConfig(
     level=logging.INFO,
