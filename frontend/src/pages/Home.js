@@ -1,9 +1,18 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Heart, Users, HandHeart, TrendingUp, ArrowRight, CheckCircle, Newspaper, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import {
+  Heart,
+  Users,
+  HandHeart,
+  TrendingUp,
+  ArrowRight,
+  CheckCircle,
+  Newspaper,
+  Calendar,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -14,7 +23,7 @@ const Home = () => {
     total_donations: 0,
     total_amount: 0,
     total_beneficiaries: 0,
-    total_campaigns: 0
+    total_campaigns: 0,
   });
   const [news, setNews] = useState([]);
   const [activities, setActivities] = useState([]);
@@ -32,7 +41,7 @@ const Home = () => {
       const response = await axios.get(`${API}/stats`);
       setStats(response.data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error("Failed to fetch stats:", error);
     }
   };
 
@@ -41,16 +50,19 @@ const Home = () => {
       const response = await axios.get(`${API}/news`);
       setNews(response.data.slice(0, 3));
     } catch (error) {
-      console.error('Failed to fetch news:', error);
+      console.error("Failed to fetch news:", error);
     }
   };
+  useEffect(() => {
+    document.title = "Home || Emergent";
+  }, []);
 
   const fetchActivities = async () => {
     try {
       const response = await axios.get(`${API}/activities`);
       setActivities(response.data.slice(0, 3));
     } catch (error) {
-      console.error('Failed to fetch activities:', error);
+      console.error("Failed to fetch activities:", error);
     }
   };
 
@@ -59,7 +71,7 @@ const Home = () => {
       const response = await axios.get(`${API}/campaigns`);
       setCampaigns(response.data.slice(0, 3));
     } catch (error) {
-      console.error('Failed to fetch campaigns:', error);
+      console.error("Failed to fetch campaigns:", error);
     }
   };
 
@@ -69,8 +81,8 @@ const Home = () => {
         className="relative h-[600px] flex items-center justify-center"
         style={{
           backgroundImage: `linear-gradient(180deg, rgba(15, 118, 110, 0.9) 0%, rgba(15, 118, 110, 0.4) 100%), url('https://images.unsplash.com/photo-1569173675610-42c361a86e37?crop=entropy&cs=srgb&fm=jpg&q=85')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -88,7 +100,9 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-base text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed"
           >
-            NVP Welfare Foundation India के साथ जुड़ें और समाज के विकास में योगदान दें। शिक्षा, स्वास्थ्य और सशक्तिकरण के क्षेत्र में हम मिलकर बदलाव ला सकते हैं।
+            NVP Welfare Foundation India के साथ जुड़ें और समाज के विकास में
+            योगदान दें। शिक्षा, स्वास्थ्य और सशक्तिकरण के क्षेत्र में हम मिलकर
+            बदलाव ला सकते हैं।
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -132,7 +146,9 @@ const Home = () => {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="text-primary" size={32} />
               </div>
-              <h3 className="font-heading font-bold text-3xl text-stone-900">{stats.total_members}+</h3>
+              <h3 className="font-heading font-bold text-3xl text-stone-900">
+                {stats.total_members}+
+              </h3>
               <p className="text-stone-600 mt-2">सदस्य</p>
             </motion.div>
 
@@ -147,7 +163,9 @@ const Home = () => {
               <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <HandHeart className="text-secondary" size={32} />
               </div>
-              <h3 className="font-heading font-bold text-3xl text-stone-900">₹{(stats.total_amount / 100000).toFixed(1)}L+</h3>
+              <h3 className="font-heading font-bold text-3xl text-stone-900">
+                ₹{(stats.total_amount / 100000).toFixed(1)}L+
+              </h3>
               <p className="text-stone-600 mt-2">दान राशि</p>
             </motion.div>
 
@@ -162,7 +180,9 @@ const Home = () => {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="text-primary" size={32} />
               </div>
-              <h3 className="font-heading font-bold text-3xl text-stone-900">{stats.total_beneficiaries}+</h3>
+              <h3 className="font-heading font-bold text-3xl text-stone-900">
+                {stats.total_beneficiaries}+
+              </h3>
               <p className="text-stone-600 mt-2">लाभार्थी</p>
             </motion.div>
 
@@ -177,7 +197,9 @@ const Home = () => {
               <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="text-secondary" size={32} />
               </div>
-              <h3 className="font-heading font-bold text-3xl text-stone-900">{stats.total_campaigns}+</h3>
+              <h3 className="font-heading font-bold text-3xl text-stone-900">
+                {stats.total_campaigns}+
+              </h3>
               <p className="text-stone-600 mt-2">सक्रिय अभियान</p>
             </motion.div>
           </div>
@@ -198,20 +220,25 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: 'शिक्षा',
-                description: 'गरीब बच्चों को मुफ्त शिक्षा और पुस्तकें प्रदान करना',
-                image: 'https://images.unsplash.com/photo-1569173675610-42c361a86e37?crop=entropy&cs=srgb&fm=jpg&q=85'
+                title: "शिक्षा",
+                description:
+                  "गरीब बच्चों को मुफ्त शिक्षा और पुस्तकें प्रदान करना",
+                image:
+                  "https://images.unsplash.com/photo-1569173675610-42c361a86e37?crop=entropy&cs=srgb&fm=jpg&q=85",
               },
               {
-                title: 'स्वास्थ्य',
-                description: 'मुफ्त चिकित्सा शिविर और दवाइयां वितरण',
-                image: 'https://images.unsplash.com/photo-1624903715293-afe920c6adad?crop=entropy&cs=srgb&fm=jpg&q=85'
+                title: "स्वास्थ्य",
+                description: "मुफ्त चिकित्सा शिविर और दवाइयां वितरण",
+                image:
+                  "https://images.unsplash.com/photo-1624903715293-afe920c6adad?crop=entropy&cs=srgb&fm=jpg&q=85",
               },
               {
-                title: 'महिला सशक्तिकरण',
-                description: 'महिलाओं को आत्मनिर्भर बनाने के लिए कौशल प्रशिक्षण',
-                image: 'https://images.unsplash.com/photo-1637176594832-97454dc84edf?crop=entropy&cs=srgb&fm=jpg&q=85'
-              }
+                title: "महिला सशक्तिकरण",
+                description:
+                  "महिलाओं को आत्मनिर्भर बनाने के लिए कौशल प्रशिक्षण",
+                image:
+                  "https://images.unsplash.com/photo-1637176594832-97454dc84edf?crop=entropy&cs=srgb&fm=jpg&q=85",
+              },
             ].map((service, index) => (
               <motion.div
                 key={index}
@@ -233,7 +260,9 @@ const Home = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     {service.title}
                   </h3>
-                  <p className="text-stone-600 leading-relaxed">{service.description}</p>
+                  <p className="text-stone-600 leading-relaxed">
+                    {service.description}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -259,7 +288,10 @@ const Home = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
-                <Newspaper className="inline-block mr-2 text-primary" size={32} />
+                <Newspaper
+                  className="inline-block mr-2 text-primary"
+                  size={32}
+                />
                 ताज़ा समाचार
               </h2>
               <p className="text-stone-600">हमारी नवीनतम खबरें और अपडेट</p>
@@ -287,12 +319,14 @@ const Home = () => {
                   )}
                   <div className="p-6">
                     <p className="text-xs text-stone-500 mb-2">
-                      {new Date(item.created_at).toLocaleDateString('hi-IN')}
+                      {new Date(item.created_at).toLocaleDateString("hi-IN")}
                     </p>
                     <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
                       {item.title}
                     </h3>
-                    <p className="text-stone-600 text-sm line-clamp-3">{item.content}</p>
+                    <p className="text-stone-600 text-sm line-clamp-3">
+                      {item.content}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -307,7 +341,10 @@ const Home = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
-                <Calendar className="inline-block mr-2 text-primary" size={32} />
+                <Calendar
+                  className="inline-block mr-2 text-primary"
+                  size={32}
+                />
                 हमारी गतिविधियां
               </h2>
               <p className="text-stone-600">हाल की सामाजिक गतिविधियां</p>
@@ -335,12 +372,14 @@ const Home = () => {
                   )}
                   <div className="p-6">
                     <p className="text-xs text-stone-500 mb-2">
-                      {new Date(item.created_at).toLocaleDateString('hi-IN')}
+                      {new Date(item.created_at).toLocaleDateString("hi-IN")}
                     </p>
                     <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
                       {item.title}
                     </h3>
-                    <p className="text-stone-600 text-sm line-clamp-3">{item.description}</p>
+                    <p className="text-stone-600 text-sm line-clamp-3">
+                      {item.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -355,10 +394,15 @@ const Home = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-heading font-bold text-3xl sm:text-4xl text-stone-900 mb-4">
-                <TrendingUp className="inline-block mr-2 text-primary" size={32} />
+                <TrendingUp
+                  className="inline-block mr-2 text-primary"
+                  size={32}
+                />
                 चल रहे अभियान
               </h2>
-              <p className="text-stone-600">हमारे फंडरेज़िंग अभियानों में योगदान करें</p>
+              <p className="text-stone-600">
+                हमारे फंडरेज़िंग अभियानों में योगदान करें
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -385,22 +429,30 @@ const Home = () => {
                     <h3 className="font-heading font-semibold text-lg text-stone-900 mb-2 line-clamp-2">
                       {item.title}
                     </h3>
-                    <p className="text-stone-600 text-sm line-clamp-2 mb-4">{item.description}</p>
-                    
+                    <p className="text-stone-600 text-sm line-clamp-2 mb-4">
+                      {item.description}
+                    </p>
+
                     {/* Progress Bar */}
                     <div className="mb-3">
                       <div className="w-full bg-stone-200 rounded-full h-2">
-                        <div 
-                          className="bg-primary h-2 rounded-full transition-all duration-500" 
-                          style={{ width: `${Math.min((item.current_amount / item.goal_amount) * 100, 100)}%` }}
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min((item.current_amount / item.goal_amount) * 100, 100)}%`,
+                          }}
                         ></div>
                       </div>
                       <div className="flex justify-between mt-2 text-sm">
-                        <span className="text-stone-600">₹{item.current_amount || 0}</span>
-                        <span className="text-stone-900 font-semibold">₹{item.goal_amount}</span>
+                        <span className="text-stone-600">
+                          ₹{item.current_amount || 0}
+                        </span>
+                        <span className="text-stone-900 font-semibold">
+                          ₹{item.goal_amount}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <Link to="/donate">
                       <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
                         दान करें <Heart className="ml-2" size={16} />
@@ -424,12 +476,12 @@ const Home = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              'पारदर्शी कार्यप्रणाली',
-              '80G टैक्स छूट',
-              'प्रमाणित संगठन',
-              'QR कोड वेरिफिकेशन',
-              'ऑनलाइन रसीद',
-              'नियमित अपडेट'
+              "पारदर्शी कार्यप्रणाली",
+              "80G टैक्स छूट",
+              "प्रमाणित संगठन",
+              "QR कोड वेरिफिकेशन",
+              "ऑनलाइन रसीद",
+              "नियमित अपडेट",
             ].map((feature, index) => (
               <motion.div
                 key={index}

@@ -1,5 +1,13 @@
-import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Twitter, Phone, Mail, MapPin } from 'lucide-react';
+import { Link } from "react-router-dom";
+import {
+  Facebook,
+  Instagram,
+  Youtube,
+  Twitter,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 
 const Footer = () => {
   return (
@@ -8,12 +16,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_ngoboost/artifacts/oauqu6j1_IMG-20260110-WA0009.jpg" 
-                alt="NVP Welfare Foundation India" 
+              <img
+                src="https://customer-assets.emergentagent.com/job_ngoboost/artifacts/oauqu6j1_IMG-20260110-WA0009.jpg"
+                alt="NVP Welfare Foundation India"
                 className="h-10 w-10 object-contain bg-white rounded-full p-1"
               />
-              <span className="font-heading font-bold text-lg text-white">NVP Welfare Foundation</span>
+              <span className="font-heading font-bold text-lg text-white">
+                NVP Welfare Foundation
+              </span>
             </div>
             <p className="text-stone-400 text-sm">
               एक बेहतर कल के लिए साथ मिलकर काम करते हैं
@@ -35,47 +45,79 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-heading font-semibold text-white mb-4">Quick Links</h3>
+            <h3 className="font-heading font-semibold text-white mb-4">
+              Quick Links
+            </h3>
             <div className="flex flex-col space-y-2">
-              <Link to="/about" className="hover:text-primary transition-colors">
+              <Link
+                to="/about"
+                className="hover:text-primary transition-colors"
+              >
                 About Us
               </Link>
-              <Link to="/services" className="hover:text-primary transition-colors">
+              <Link
+                to="/services"
+                className="hover:text-primary transition-colors"
+              >
                 Services
               </Link>
-              <Link to="/campaigns" className="hover:text-primary transition-colors">
+              <Link
+                to="/campaigns"
+                className="hover:text-primary transition-colors"
+              >
                 Campaigns
               </Link>
-              <Link to="/events" className="hover:text-primary transition-colors">
+              <Link
+                to="/events"
+                className="hover:text-primary transition-colors"
+              >
                 Events
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="font-heading font-semibold text-white mb-4">Get Involved</h3>
+            <h3 className="font-heading font-semibold text-white mb-4">
+              Get Involved
+            </h3>
             <div className="flex flex-col space-y-2">
-              <Link to="/donate" className="hover:text-primary transition-colors">
+              <Link
+                to="/donate"
+                className="hover:text-primary transition-colors"
+              >
                 Donate Now
               </Link>
-              <Link to="/register" className="hover:text-primary transition-colors">
+              <Link
+                to="/register"
+                className="hover:text-primary transition-colors"
+              >
                 Become a Member
               </Link>
-              <Link to="/events" className="hover:text-primary transition-colors">
+              <Link
+                to="/events"
+                className="hover:text-primary transition-colors"
+              >
                 Volunteer
               </Link>
-              <Link to="/contact" className="hover:text-primary transition-colors">
+              <Link
+                to="/contact"
+                className="hover:text-primary transition-colors"
+              >
                 Contact Us
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="font-heading font-semibold text-white mb-4">Contact</h3>
+            <h3 className="font-heading font-semibold text-white mb-4">
+              Contact
+            </h3>
             <div className="flex flex-col space-y-3 text-sm">
               <div className="flex items-start space-x-2">
                 <MapPin size={18} className="mt-1 flex-shrink-0" />
-                <span>नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान</span>
+                <span>
+                  नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone size={18} className="flex-shrink-0" />
@@ -83,14 +125,17 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail size={18} className="flex-shrink-0" />
-                <span>info@nvpwelfare.in</span>
+                <span>nvpwfoundationindia@gmail.com</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-stone-800 mt-8 pt-8 text-center text-sm text-stone-400">
-          <p>&copy; {new Date().getFullYear()} NVP Welfare Foundation India. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} NVP Welfare Foundation India. All
+            rights reserved.
+          </p>
         </div>
       </div>
     </footer>

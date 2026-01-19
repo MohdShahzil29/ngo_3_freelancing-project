@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Phone, Mail, MapPin } from 'lucide-react';
-import { toast } from 'sonner';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Phone, Mail, MapPin } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -29,14 +29,18 @@ const Contact = () => {
 
     try {
       await axios.post(`${API}/enquiries`, formData);
-      toast.success('आपका संदेश भेज दिया गया है!');
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      toast.success("आपका संदेश भेज दिया गया है!");
+      setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
-      toast.error('Failed to send message');
+      toast.error("Failed to send message");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    document.title = "Contact Us || Emergent";
+  }, []);
 
   return (
     <div className="min-h-screen bg-stone-50 py-12" data-testid="contact-page">
@@ -58,7 +62,9 @@ const Contact = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="name" className="text-stone-700">Name *</Label>
+                <Label htmlFor="name" className="text-stone-700">
+                  Name *
+                </Label>
                 <Input
                   id="name"
                   name="name"
@@ -72,7 +78,9 @@ const Contact = () => {
               </div>
 
               <div>
-                <Label htmlFor="email" className="text-stone-700">Email *</Label>
+                <Label htmlFor="email" className="text-stone-700">
+                  Email *
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -86,7 +94,9 @@ const Contact = () => {
               </div>
 
               <div>
-                <Label htmlFor="phone" className="text-stone-700">Phone *</Label>
+                <Label htmlFor="phone" className="text-stone-700">
+                  Phone *
+                </Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -100,7 +110,9 @@ const Contact = () => {
               </div>
 
               <div>
-                <Label htmlFor="message" className="text-stone-700">Message *</Label>
+                <Label htmlFor="message" className="text-stone-700">
+                  Message *
+                </Label>
                 <Textarea
                   id="message"
                   name="message"
@@ -119,7 +131,7 @@ const Contact = () => {
                 className="w-full bg-primary hover:bg-primary/90"
                 data-testid="contact-submit-button"
               >
-                {loading ? 'Sending...' : 'Send Message'}
+                {loading ? "Sending..." : "Send Message"}
               </Button>
             </form>
           </div>
@@ -148,7 +160,9 @@ const Contact = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     Email
                   </h3>
-                  <p className="text-stone-600">info@nvpwelfare.in</p>
+                  <p className="text-stone-600">
+                    nvpwfoundationindia@gmail.com
+                  </p>
                 </div>
               </div>
             </div>
@@ -162,7 +176,9 @@ const Contact = () => {
                   <h3 className="font-heading font-semibold text-xl text-stone-900 mb-2">
                     पता
                   </h3>
-                  <p className="text-stone-600">नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान</p>
+                  <p className="text-stone-600">
+                    नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान
+                  </p>
                 </div>
               </div>
             </div>

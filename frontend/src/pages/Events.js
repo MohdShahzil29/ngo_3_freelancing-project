@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Calendar, MapPin, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Calendar, MapPin, Users } from "lucide-react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -19,9 +19,13 @@ const Events = () => {
       const response = await axios.get(`${API}/events`);
       setEvents(response.data);
     } catch (error) {
-      console.error('Failed to fetch events:', error);
+      console.error("Failed to fetch events:", error);
     }
   };
+
+  useEffect(() => {
+    document.title = "Events || Emergent";
+  }, []);
 
   return (
     <div className="min-h-screen bg-stone-50 py-12" data-testid="events-page">
@@ -66,7 +70,7 @@ const Events = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center space-x-2 text-stone-600">
                       <Calendar size={18} />
-                      <span>{format(new Date(event.event_date), 'PPP')}</span>
+                      <span>{format(new Date(event.event_date), "PPP")}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-stone-600">
                       <MapPin size={18} />
@@ -76,7 +80,8 @@ const Events = () => {
                       <div className="flex items-center space-x-2 text-stone-600">
                         <Users size={18} />
                         <span>
-                          {event.registered_count} / {event.max_participants} registered
+                          {event.registered_count} / {event.max_participants}{" "}
+                          registered
                         </span>
                       </div>
                     )}

@@ -1,25 +1,29 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Heart, Shield, FileText } from 'lucide-react';
-import { toast } from 'sonner';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Heart, Shield, FileText } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_key';
+const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_key";
 
 const Donate = () => {
   const [formData, setFormData] = useState({
-    donor_name: '',
-    donor_email: '',
-    donor_phone: '',
-    amount: '',
-    purpose: ''
+    donor_name: "",
+    donor_email: "",
+    donor_phone: "",
+    amount: "",
+    purpose: "",
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = "Donate || Emergent";
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,8 +31,8 @@ const Donate = () => {
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -42,12 +46,15 @@ const Donate = () => {
     try {
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        toast.error('Failed to load payment gateway');
+        toast.error("Failed to load payment gateway");
         setLoading(false);
         return;
       }
 
-      const response = await axios.post(`${API}/donations/create-order`, formData);
+      const response = await axios.post(
+        `${API}/donations/create-order`,
+        formData,
+      );
       const { order_id, amount, currency, donation_id } = response.data;
 
       const options = {
@@ -55,40 +62,40 @@ const Donate = () => {
         amount: amount,
         currency: currency,
         order_id: order_id,
-        name: 'NVP Welfare Foundation India',
-        description: formData.purpose || 'General Donation',
+        name: "NVP Welfare Foundation India",
+        description: formData.purpose || "General Donation",
         handler: async function (response) {
           try {
             await axios.post(`${API}/donations/verify-payment`, {
               order_id: order_id,
-              payment_id: response.razorpay_payment_id
+              payment_id: response.razorpay_payment_id,
             });
-            toast.success('Donation successful! Receipt sent to your email.');
+            toast.success("Donation successful! Receipt sent to your email.");
             setFormData({
-              donor_name: '',
-              donor_email: '',
-              donor_phone: '',
-              amount: '',
-              purpose: ''
+              donor_name: "",
+              donor_email: "",
+              donor_phone: "",
+              amount: "",
+              purpose: "",
             });
           } catch (error) {
-            toast.error('Payment verification failed');
+            toast.error("Payment verification failed");
           }
         },
         prefill: {
           name: formData.donor_name,
           email: formData.donor_email,
-          contact: formData.donor_phone
+          contact: formData.donor_phone,
         },
         theme: {
-          color: '#0F766E'
-        }
+          color: "#0F766E",
+        },
       };
 
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to initiate payment');
+      toast.error(error.response?.data?.detail || "Failed to initiate payment");
     } finally {
       setLoading(false);
     }
@@ -116,7 +123,9 @@ const Donate = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="donor_name" className="text-stone-700">Full Name *</Label>
+                <Label htmlFor="donor_name" className="text-stone-700">
+                  Full Name *
+                </Label>
                 <Input
                   id="donor_name"
                   name="donor_name"
@@ -130,7 +139,9 @@ const Donate = () => {
               </div>
 
               <div>
-                <Label htmlFor="donor_email" className="text-stone-700">Email *</Label>
+                <Label htmlFor="donor_email" className="text-stone-700">
+                  Email *
+                </Label>
                 <Input
                   id="donor_email"
                   name="donor_email"
@@ -144,7 +155,9 @@ const Donate = () => {
               </div>
 
               <div>
-                <Label htmlFor="donor_phone" className="text-stone-700">Phone Number *</Label>
+                <Label htmlFor="donor_phone" className="text-stone-700">
+                  Phone Number *
+                </Label>
                 <Input
                   id="donor_phone"
                   name="donor_phone"
@@ -158,15 +171,23 @@ const Donate = () => {
               </div>
 
               <div>
-                <Label className="text-stone-700 mb-3 block">Amount (₹) *</Label>
+                <Label className="text-stone-700 mb-3 block">
+                  Amount (₹) *
+                </Label>
                 <div className="grid grid-cols-4 gap-2 mb-4">
                   {quickAmounts.map((amt) => (
                     <Button
                       key={amt}
                       type="button"
                       variant="outline"
-                      onClick={() => setFormData({ ...formData, amount: amt.toString() })}
-                      className={formData.amount === amt.toString() ? 'border-primary bg-primary/5' : ''}
+                      onClick={() =>
+                        setFormData({ ...formData, amount: amt.toString() })
+                      }
+                      className={
+                        formData.amount === amt.toString()
+                          ? "border-primary bg-primary/5"
+                          : ""
+                      }
                       data-testid={`quick-amount-${amt}`}
                     >
                       ₹{amt}
@@ -187,7 +208,9 @@ const Donate = () => {
               </div>
 
               <div>
-                <Label htmlFor="purpose" className="text-stone-700">Purpose (Optional)</Label>
+                <Label htmlFor="purpose" className="text-stone-700">
+                  Purpose (Optional)
+                </Label>
                 <Textarea
                   id="purpose"
                   name="purpose"
@@ -206,7 +229,9 @@ const Donate = () => {
                 className="w-full bg-secondary hover:bg-secondary/90 text-base py-6"
                 data-testid="donate-submit-button"
               >
-                {loading ? 'Processing...' : `Donate ₹${formData.amount || '0'}`}
+                {loading
+                  ? "Processing..."
+                  : `Donate ₹${formData.amount || "0"}`}
               </Button>
             </form>
           </div>
@@ -222,7 +247,8 @@ const Donate = () => {
                     सुरक्षित भुगतान
                   </h3>
                   <p className="text-stone-600">
-                    Razorpay के माध्यम से 100% सुरक्षित भुगतान। सभी प्रमुख भुगतान विधियां स्वीकृत।
+                    Razorpay के माध्यम से 100% सुरक्षित भुगतान। सभी प्रमुख
+                    भुगतान विधियां स्वीकृत।
                   </p>
                 </div>
               </div>
@@ -250,7 +276,8 @@ const Donate = () => {
                     पारदर्शिता
                   </h3>
                   <p className="text-stone-600">
-                    आपके दान का पूरा रिकॉर्ड और उपयोग की जानकारी डैशबोर्ड पर उपलब्ध।
+                    आपके दान का पूरा रिकॉर्ड और उपयोग की जानकारी डैशबोर्ड पर
+                    उपलब्ध।
                   </p>
                 </div>
               </div>
