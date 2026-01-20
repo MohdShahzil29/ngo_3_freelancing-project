@@ -1,27 +1,29 @@
-import '@/App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from '@/components/ui/sonner';
-import Home from './pages/Home';
-import About from './pages/About';
-import Services from './pages/Services';
-import Donate from './pages/Donate';
-import Campaigns from './pages/Campaigns';
-import Events from './pages/Events';
-import Contact from './pages/Contact';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import MemberDashboard from './pages/MemberDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import "@/App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Services from "./pages/Services";
+import Donate from "./pages/Donate";
+import Campaigns from "./pages/Campaigns";
+import Events from "./pages/Events";
+import Contact from "./pages/Contact";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import MemberDashboard from "./pages/MemberDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <AuthProvider>
       <div className="App">
         <BrowserRouter>
+          <ScrollToTop />
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />

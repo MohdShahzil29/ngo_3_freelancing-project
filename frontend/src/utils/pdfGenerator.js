@@ -69,7 +69,7 @@ export const generateCertificatePDF = (certificate) => {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text(
-    "नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान",
+    "नारायण निवास, बजरंग नगर, मोड़ा बालाजी रोड, दौसा, राजस्थान – 303303",
     148.5,
     167,
     { align: "center" },
@@ -113,9 +113,14 @@ export const generateReceiptPDF = (receipt) => {
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
-  doc.text("नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान", 105, 30, {
-    align: "center",
-  });
+  doc.text(
+    "नारायण निवास, बजरंग नगर, मोड़ा बालाजी रोड, दौसा, राजस्थान – 303303",
+    105,
+    30,
+    {
+      align: "center",
+    },
+  );
 
   // Reset text color
   doc.setTextColor(0, 0, 0);

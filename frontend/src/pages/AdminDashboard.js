@@ -43,6 +43,11 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+const token = localStorage.getItem("token");
+if (token) {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
+
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -196,7 +201,10 @@ const AdminDashboard = () => {
         axios.get(`${API}/events`).catch(() => ({ data: [] })),
       ]);
       setStats(statsRes.data);
-      setMembers(membersRes.data);
+      // setMembers(membersRes.data);
+      setMembers(membersRes.data.members || []);
+      console.log("MEMBERS API RESPONSE:", membersRes.data);
+
       setDonations(donationsRes.data);
       setEnquiries(enquiriesRes.data);
       setBeneficiaries(beneficiariesRes.data);
@@ -215,6 +223,9 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  console.log(user.role); // admin hona chahiye
+  console.log(members.data); // members array hona chahiye
 
   const handleUpdateMemberStatus = async (memberId, status) => {
     try {
@@ -236,6 +247,18 @@ const AdminDashboard = () => {
     } catch (error) {
       toast.error("Failed to publish news");
     }
+  };
+
+  const fetchMembers = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(`${API}/members`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setMembers(res.data);
   };
 
   const handleCreateActivity = async (e) => {

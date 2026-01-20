@@ -12,6 +12,7 @@ import {
 import NarenderImage from "@/assets/Narender.jpeg";
 import कृष्ण from "@/assets/कृष्ण.jpeg";
 import { useEffect } from "react";
+import जीतेशकुमारगुप्ता from "@/assets/जीतेश कुमार गुप्ता.jpeg";
 
 const About = () => {
   const areasOfWork = [
@@ -58,6 +59,11 @@ const About = () => {
   ];
 
   const teamMembers = [
+    {
+      name: "जीतेश कुमार गुप्ता",
+      role: "Cofounder",
+      img: जीतेशकुमारगुप्ता,
+    },
     {
       name: "नरेंद्र कुमार महावर",
       role: "चेयरमैन",
@@ -273,7 +279,7 @@ const About = () => {
       </section>
 
       {/* Team Members Section */}
-      <section className="py-12 bg-white">
+      {/* <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="font-heading font-bold text-3xl text-stone-900 mb-2">
@@ -305,6 +311,34 @@ const About = () => {
                     {member.name}
                   </h4>
                   <p className="text-primary font-medium mt-1">{member.role}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-10">Team Members</h2>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {teamMembers.map((member, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white border rounded-xl p-6 flex items-center gap-4 hover:shadow-lg"
+              >
+                <img
+                  src={member.img}
+                  alt={member.name}
+                  className="w-24 h-24 rounded-full object-cover border-2 border-primary"
+                />
+                <div>
+                  <h4 className="font-semibold">{member.name}</h4>
+                  <p className="text-primary">{member.role}</p>
                 </div>
               </motion.div>
             ))}
@@ -400,7 +434,8 @@ const About = () => {
               <div>
                 <h3 className="font-semibold text-stone-900 mb-2">पता</h3>
                 <p className="text-stone-600">
-                  नारायण निवास बजरंग नगर मोड़ा बालाजी रोड दौसा राजस्थान
+                  नारायण निवास, बजरंग नगर, मोड़ा बालाजी रोड, दौसा, राजस्थान –
+                  303303
                 </p>
               </div>
               <div>

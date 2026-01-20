@@ -46,7 +46,7 @@
     "Contact form submission functionality",
     "All navigation links working correctly",
     "Stats dashboard showing real-time data updates",
-    "Organization contact details display (78776 43155,  nvpwfoundationindia@gmail.com)"
+    " contact details display (78776 43155,  nvpwfoundationindia@gmail.com)"
   ],
 
   "test_report_links": ["/app/backend_test.py"],
