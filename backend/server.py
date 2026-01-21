@@ -978,7 +978,7 @@ async def root():
 #     allow_headers=["*"],
 # )
 
-origins = os.environ.get('CORS_ORIGINS', 'https://ngo-3-freelancing-project.onrender.com').split(',')
+origins = os.environ.get('CORS_ORIGINS', 'https://ngo-3-freelancing-project-ye1a.vercel.app').split(',')
 
 @app.middleware("http")
 async def log_preflight(request, call_next):
