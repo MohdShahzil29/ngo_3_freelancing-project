@@ -58,6 +58,9 @@ api_router = APIRouter(prefix="/api")
 # security = HTTPBearer()
 security = HTTPBearer(auto_error=False)
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 # ==================== MODELS ====================
 
 class User(BaseModel):
@@ -978,7 +981,11 @@ async def root():
 #     allow_headers=["*"],
 # )
 
-origins = os.environ.get('CORS_ORIGINS', 'https://ngo-3-freelancing-project-ye1a.vercel.app').split(',')
+
+origins_env = os.environ.get('CORS_ORIGINS',
+    'https://ngo-3-freelancing-project-ye1a.vercel.app,https://ngo-3-freelancing-project.onrender.com'
+)
+origins = [o.strip() for o in origins_env.split(',') if o.strip()]
 
 @app.middleware("http")
 async def log_preflight(request, call_next):
@@ -989,11 +996,10 @@ async def log_preflight(request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,            # explicit origins, NOT ['*'] when using credentials
-    allow_credentials=True,           # only if you need cookies/auth
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_origins=origins,      # exact origins (no '*' when using credentials)
+    allow_credentials=True,     # only if you need cookies/auth
+    allow_methods=["*"],        # allow OPTIONS, POST, GET, etc.
     allow_headers=["*"],
-    expose_headers=["*"],
     max_age=3600,
 )
 
