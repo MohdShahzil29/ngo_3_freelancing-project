@@ -970,12 +970,31 @@ async def root():
 # Include router
 # app.include_router(api_router)
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_credentials=True,
+#     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+origins = os.environ.get('CORS_ORIGINS', 'https://ngo-3-freelancing-project.onrender.com').split(',')
+
+@app.middleware("http")
+async def log_preflight(request, call_next):
+    if request.method == "OPTIONS":
+        logger.info("OPTIONS request headers: %s", dict(request.headers))
+    return await call_next(request)
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
+    allow_origins=origins,            # explicit origins, NOT ['*'] when using credentials
+    allow_credentials=True,           # only if you need cookies/auth
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 app.include_router(api_router)
