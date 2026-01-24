@@ -22,6 +22,41 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (formData.password !== formData.confirmPassword) {
+  //     toast.error("Passwords do not match");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     await register({
+  //       name: formData.name,
+  //       email: formData.email,
+  //       phone: formData.phone,
+  //       password: formData.password,
+  //       role: "member",
+  //     });
+  //     toast.success("Registration successful!");
+  //     // navigate("/member-dashboard");
+  //     if (user.role === "admin") {
+  //       navigate("/admin-dashboard");
+  //     } else if (user.role === "member") {
+  //       navigate("/member-dashboard");
+  //     } else {
+  //       toast.info("Your membership is pending approval");
+  //       navigate("/pending-approval");
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.detail || "Registration failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,10 +73,11 @@ const Register = () => {
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        role: "member",
+        // ❌ role mat bhej
       });
+
       toast.success("Registration successful!");
-      navigate("/member-dashboard");
+      navigate("/pending-approval"); // ✅ direct
     } catch (error) {
       toast.error(error.response?.data?.detail || "Registration failed");
     } finally {

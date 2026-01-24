@@ -26,6 +26,12 @@ const Campaigns = () => {
     document.title = "Campaigns || Emergent";
   }, []);
 
+  const getImageUrl = (url) => {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    return `${BACKEND_URL}${url}`;
+  };
+
   return (
     <div
       className="min-h-screen bg-stone-50 py-12"
@@ -60,7 +66,8 @@ const Campaigns = () => {
               >
                 {campaign.image_url && (
                   <img
-                    src={campaign.image_url}
+                    // src={campaign.image_url}
+                    src={getImageUrl(campaign.image_url)}
                     alt={campaign.title}
                     className="w-full h-48 object-cover"
                   />

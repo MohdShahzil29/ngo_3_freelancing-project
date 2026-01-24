@@ -70,16 +70,18 @@ class User(BaseModel):
     password_hash: str
     name: str
     phone: str
-    role: str = "member"  # admin, member, public
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    role: str = "member"   # ✅ by default member
     is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 class UserRegister(BaseModel):
     email: EmailStr
     password: str
     name: str
     phone: str
-    role: str = "member"
+    # ❌ role remove kar diya
+
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -302,37 +304,34 @@ def generate_receipt_number() -> str:
 
 @api_router.post("/auth/register")
 async def register(user_data: UserRegister):
-    # Check if user exists
     existing_user = await db.users.find_one({"email": user_data.email}, {"_id": 0})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Create user
+
     user = User(
         email=user_data.email,
         password_hash=hash_password(user_data.password),
         name=user_data.name,
         phone=user_data.phone,
-        role=user_data.role
+        role="member",      # ✅ force member
+        is_active=False
     )
-    
+
     doc = user.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.users.insert_one(doc)
-    
-    # Send welcome email
-    html_content = f"""
-    <h2>Welcome to NVP Welfare Foundation India!</h2>
-    <p>Dear {user.name},</p>
-    <p>Your account has been successfully created.</p>
-    <p>Email: {user.email}</p>
-    <p>Role: {user.role}</p>
-    <p>Thank you for joining us!</p>
-    """
-    await send_email(user.email, "Welcome to NVP Welfare Foundation", html_content)
-    
+
     token = create_jwt_token(user.id, user.email, user.role)
-    return {"token": token, "user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role}}
+
+    return {
+        "token": token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role
+        }
+    }
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
@@ -538,16 +537,36 @@ async def delete_certificate(certificate_id: str, user_data: dict = Depends(veri
 
 # ==================== NEWS ROUTES ====================
 
+# @api_router.post("/news")
+# async def create_news(news_data: dict, user_data: dict = Depends(verify_token)):
+#     if user_data['role'] != 'admin':
+#         raise HTTPException(status_code=403, detail="Only admins can post news")
+    
+#     news = News(author_id=user_data['user_id'], **news_data)
+#     doc = news.model_dump()
+#     doc['created_at'] = doc['created_at'].isoformat()
+#     await db.news.insert_one(doc)
+#     return {"message": "News published", "id": news.id}
+
 @api_router.post("/news")
 async def create_news(news_data: dict, user_data: dict = Depends(verify_token)):
     if user_data['role'] != 'admin':
         raise HTTPException(status_code=403, detail="Only admins can post news")
-    
-    news = News(author_id=user_data['user_id'], **news_data)
+
+    # remove author_id if frontend sent it
+    news_data.pop("author_id", None)
+
+    news = News(
+        **news_data,
+        author_id=user_data['user_id']
+    )
+
     doc = news.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.news.insert_one(doc)
+
     return {"message": "News published", "id": news.id}
+
 
 @api_router.get("/news")
 async def get_news():
@@ -648,6 +667,20 @@ async def get_enquiries(user_data: dict = Depends(verify_token)):
         raise HTTPException(status_code=403, detail="Only admins can view enquiries")
     enquiries = await db.enquiries.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return enquiries
+
+@api_router.get("/users/members")
+async def get_member_users(user_data: dict = Depends(verify_token)):
+    if user_data['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin allowed")
+
+    users = await db.users.find(
+        {"role": "member"},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(1000)
+
+    return users
+
+    
 
 # ==================== BENEFICIARY ROUTES ====================
 
@@ -899,6 +932,58 @@ async def get_stats():
         "total_campaigns": total_campaigns
     }
 
+# ==================== RECEIPT ROUTES ====================
+@api_router.patch("/users/{user_id}/approve")
+async def approve_user(user_id: str, admin: dict = Depends(verify_token)):
+    if admin.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin allowed")
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"role": "member", "is_active": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+    try:
+        html = f"""
+        <h2>Membership Approved</h2>
+        <p>Dear {user.get('name')},</p>
+        <p>Your membership has been <strong>approved</strong>. Congratulations — you can now access the member dashboard.</p>
+        """
+        await send_email(user['email'], "Membership Approved - NVP Welfare Foundation", html)
+    except Exception as e:
+        logger.warning("Failed to send approval email: %s", e)
+
+    return {"message": "User approved and notified"}
+
+
+@api_router.patch("/users/{user_id}/reject")
+async def reject_user(user_id: str, admin: dict = Depends(verify_token)):
+    if admin.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin allowed")
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"is_active": False, "role": "public"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+    try:
+        html = f"""
+        <h2>Membership Request Update</h2>
+        <p>Dear {user.get('name')},</p>
+        <p>We are sorry to inform you that your membership request has been <strong>rejected</strong>. For more details, please contact the admin.</p>
+        """
+        await send_email(user['email'], "Membership Rejected - NVP Welfare Foundation", html)
+    except Exception as e:
+        logger.warning("Failed to send rejection email: %s", e)
+
+    return {"message": "User rejected and notified"}
+
+
+
 # ==================== IMAGE UPLOAD ROUTES ====================
 
 # Create uploads directory
@@ -996,9 +1081,11 @@ async def log_preflight(request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-     allow_origins=[
+       allow_origins=[
+        "http://localhost:3000",
+        "http://0.0.0.0:8000",
         "https://ngo-3-freelancing-project-ye1a.vercel.app"
-    ],   
+    ],
     allow_credentials=False,     # only if you need cookies/auth
     allow_methods=["*"],        # allow OPTIONS, POST, GET, etc.
     allow_headers=["*"],
@@ -1017,6 +1104,5 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
-
 
 

@@ -48,6 +48,7 @@ if (token) {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
 
+console.log("Token in AdminDashboard:", token);
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [memberUsers, setMemberUsers] = useState([]); // users with role=member
 
   // Forms state
   const [beneficiaryForm, setBeneficiaryForm] = useState({
@@ -167,6 +169,16 @@ const AdminDashboard = () => {
     document.title = "Admin Dashboard || Emergent";
   }, []);
 
+  const safeList = (res) => {
+    // Accept either array or { data: [...] } or { members: [...] }
+    if (!res) return [];
+    const payload = res.data ?? res;
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.members)) return payload.members;
+    return [];
+  };
+
   const fetchData = async () => {
     try {
       const [
@@ -201,8 +213,8 @@ const AdminDashboard = () => {
         axios.get(`${API}/events`).catch(() => ({ data: [] })),
       ]);
       setStats(statsRes.data);
-      // setMembers(membersRes.data);
-      setMembers(membersRes.data.members || []);
+      setMembers(membersRes.data);
+      // setMembers(membersRes.data.members || []);
       console.log("MEMBERS API RESPONSE:", membersRes.data);
 
       setDonations(donationsRes.data);
@@ -249,33 +261,21 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchMembers = async () => {
-    const token = localStorage.getItem("token");
-
-    const res = await axios.get(`${API}/members`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setMembers(res.data);
-  };
-
-  const handleCreateActivity = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API}/activities`, {
-        ...activityForm,
-        author_id: user.id,
-        images: activityForm.image_url ? [activityForm.image_url] : [],
-      });
-      toast.success("Activity posted successfully!");
-      setActivityForm({ title: "", description: "", image_url: "" });
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to post activity");
-    }
-  };
+  // const handleCreateActivity = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     await axios.post(`${API}/activities`, {
+  //       ...activityForm,
+  //       author_id: user.id,
+  //       images: activityForm.image_url ? [activityForm.image_url] : [],
+  //     });
+  //     toast.success("Activity posted successfully!");
+  //     setActivityForm({ title: "", description: "", image_url: "" });
+  //     fetchData();
+  //   } catch (error) {
+  //     toast.error("Failed to post activity");
+  //   }
+  // };
 
   // Image upload handler
   // const handleImageUpload = async (
@@ -317,6 +317,65 @@ const AdminDashboard = () => {
   //   }
   // };
 
+  // const handleImageUpload = async (
+  //   e,
+  //   formSetter,
+  //   formState,
+  //   fieldName = "image_url",
+  // ) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   // 🔹 Instant preview
+  //   const previewUrl = URL.createObjectURL(file);
+  //   setImagePreview(previewUrl);
+
+  //   // validations
+  //   if (!file.type.startsWith("image/")) {
+  //     toast.error("कृपया केवल इमेज फाइल अपलोड करें");
+  //     return;
+  //   }
+
+  //   if (file.size > 5 * 1024 * 1024) {
+  //     toast.error("इमेज का साइज 5MB से कम होना चाहिए");
+  //     return;
+  //   }
+
+  //   setUploading(true);
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("file", file);
+
+  //     const response = await axios.post(`${API}/upload-image`, formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     // 🔹 Backend URL save
+  //     formSetter({ ...formState, [fieldName]: response.data.url });
+
+  //     toast.success("इमेज अपलोड हो गई!");
+  //   } catch (error) {
+  //     toast.error("इमेज अपलोड करने में समस्या हुई");
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+
+  const handleCreateActivity = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API}/activities`, {
+        ...activityForm,
+        images: activityForm.image_url ? [activityForm.image_url] : [],
+      });
+      toast.success("Activity posted successfully!");
+      setActivityForm({ title: "", description: "", image_url: "" });
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to post activity");
+    }
+  };
+
   const handleImageUpload = async (
     e,
     formSetter,
@@ -326,16 +385,14 @@ const AdminDashboard = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 🔹 Instant preview
-    const previewUrl = URL.createObjectURL(file);
-    setImagePreview(previewUrl);
+    // instant local preview
+    const localPreview = URL.createObjectURL(file);
+    setImagePreview(localPreview);
 
-    // validations
     if (!file.type.startsWith("image/")) {
       toast.error("कृपया केवल इमेज फाइल अपलोड करें");
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       toast.error("इमेज का साइज 5MB से कम होना चाहिए");
       return;
@@ -350,11 +407,21 @@ const AdminDashboard = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // 🔹 Backend URL save
-      formSetter({ ...formState, [fieldName]: response.data.url });
+      const serverUrl = response.data.url; // backend returns absolute URL (preferred)
+      // If backend returns a relative path, convert it to absolute:
+      const absoluteUrl = serverUrl.startsWith("http")
+        ? serverUrl
+        : `${BACKEND_URL}${serverUrl}`;
+
+      // save the server URL (keep relative or absolute as you prefer)
+      formSetter({ ...formState, [fieldName]: serverUrl });
+
+      // show absolute preview in UI
+      setImagePreview(absoluteUrl);
 
       toast.success("इमेज अपलोड हो गई!");
     } catch (error) {
+      console.error("upload error:", error);
       toast.error("इमेज अपलोड करने में समस्या हुई");
     } finally {
       setUploading(false);
@@ -609,6 +676,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchMemberUsers = async () => {
+    try {
+      const res = await axios.get(`${API}/users/members`);
+      setMemberUsers(res.data);
+      console.log("MEMBER USERS:", res.data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load member users");
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "memberslist") {
+      fetchMemberUsers();
+    }
+  }, [activeTab]);
+
+  console.log("Member Users:", memberUsers);
+
   const handleCreateDesignation = async (e) => {
     e.preventDefault();
     try {
@@ -645,6 +731,16 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleApproveUser = async (userId) => {
+    await axios.patch(`${API}/users/${userId}/approve`);
+    fetchMemberUsers();
+  };
+
+  const handleRejectUser = async (userId) => {
+    await axios.patch(`${API}/users/${userId}/reject`);
+    fetchMemberUsers();
+  };
+
   const handleCreateBeneficiary = async (e) => {
     e.preventDefault();
     try {
@@ -672,6 +768,7 @@ const AdminDashboard = () => {
   const adminModules = [
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "members", label: "Members", icon: Users },
+    { id: "memberslist", label: "Members List", icon: Users },
     { id: "donations", label: "Donations", icon: Heart },
     { id: "beneficiaries", label: "Beneficiaries", icon: UserCheck },
     { id: "certificates", label: "Certificates", icon: Award },
@@ -1012,6 +1109,85 @@ const AdminDashboard = () => {
                   </CardContent>
                 </Card>
               </div>
+            )}
+
+            {activeTab === "memberslist" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>All Members (Users)</CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  {memberUsers.length === 0 ? (
+                    <p className="text-stone-600 text-center py-8">
+                      No member users found
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {memberUsers.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex justify-between items-center p-4 bg-stone-50 rounded-lg"
+                        >
+                          {/* LEFT INFO */}
+                          <div>
+                            <p className="font-semibold text-stone-900">
+                              {user.name}
+                            </p>
+                            <p className="text-sm text-stone-600">
+                              {user.email}
+                            </p>
+                            <p className="text-xs text-stone-500">
+                              Phone: {user.phone}
+                            </p>
+                          </div>
+
+                          {/* RIGHT ACTIONS / STATUS */}
+                          <div className="flex items-center gap-2">
+                            {/* APPROVED */}
+                            {user.role === "member" &&
+                              user.is_active === true && (
+                                <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                  Approved
+                                </span>
+                              )}
+
+                            {/* REJECTED */}
+                            {user.role === "public" &&
+                              user.is_active === false && (
+                                <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800">
+                                  Rejected
+                                </span>
+                              )}
+
+                            {/* PENDING → SHOW BUTTONS */}
+                            {user.role === "member" &&
+                              user.is_active === false && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    className="bg-green-600 hover:bg-green-700"
+                                    onClick={() => handleApproveUser(user.id)}
+                                  >
+                                    Approve
+                                  </Button>
+
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => handleRejectUser(user.id)}
+                                  >
+                                    Reject
+                                  </Button>
+                                </>
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {/* Projects Tab */}
@@ -1612,7 +1788,7 @@ const AdminDashboard = () => {
                         </div>
                         {newsForm.image_url && (
                           <img
-                            src={newsForm.image_url}
+                            src={getImageUrl(newsForm.image_url)}
                             alt="Preview"
                             className="mt-2 h-24 rounded-lg object-cover"
                           />
@@ -1649,7 +1825,8 @@ const AdminDashboard = () => {
                               <div className="flex gap-4">
                                 {item.image_url && (
                                   <img
-                                    src={item.image_url}
+                                    // src={item.image_url}
+                                    src={getImageUrl(item.image_url)}
                                     alt={item.title}
                                     className="w-20 h-20 rounded-lg object-cover"
                                   />
@@ -1745,7 +1922,8 @@ const AdminDashboard = () => {
                         </div>
                         {activityForm.image_url && (
                           <img
-                            src={activityForm.image_url}
+                            // src={activityForm.image_url}
+                            src={getImageUrl(activityForm.image_url)}
                             alt="Preview"
                             className="mt-2 h-24 rounded-lg object-cover"
                           />
@@ -1782,7 +1960,10 @@ const AdminDashboard = () => {
                               <div className="flex gap-4">
                                 {(item.images?.[0] || item.image_url) && (
                                   <img
-                                    src={item.images?.[0] || item.image_url}
+                                    // src={item.images?.[0] || item.image_url}
+                                    src={getImageUrl(
+                                      item.images?.[0] || item.image_url,
+                                    )}
                                     alt={item.title}
                                     className="w-20 h-20 rounded-lg object-cover"
                                   />
@@ -1922,7 +2103,8 @@ const AdminDashboard = () => {
                         </div>
                         {campaignForm.image_url && (
                           <img
-                            src={campaignForm.image_url}
+                            // src={campaignForm.image_url}
+                            src={getImageUrl(campaignForm.image_url)}
                             alt="Preview"
                             className="mt-2 h-24 rounded-lg object-cover"
                           />
@@ -1959,7 +2141,8 @@ const AdminDashboard = () => {
                               <div className="flex gap-4">
                                 {item.image_url && (
                                   <img
-                                    src={item.image_url}
+                                    // src={item.image_url}
+                                    src={getImageUrl(item.image_url)}
                                     alt={item.title}
                                     className="w-20 h-20 rounded-lg object-cover"
                                   />
@@ -2109,7 +2292,10 @@ const AdminDashboard = () => {
                           <>
                             {(imagePreview || eventForm.image_url) && (
                               <img
-                                src={imagePreview || eventForm.image_url}
+                                // src={imagePreview || eventForm.image_url}
+                                src={getImageUrl(
+                                  imagePreview || eventForm.image_url,
+                                )}
                                 alt="Preview"
                                 className="mt-2 h-24 rounded-lg object-cover"
                               />

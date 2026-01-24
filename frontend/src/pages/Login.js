@@ -23,8 +23,11 @@ const Login = () => {
 
       if (user.role === "admin") {
         navigate("/admin-dashboard");
-      } else {
+      } else if (user.role === "member") {
         navigate("/member-dashboard");
+      } else {
+        toast.info("Your membership is pending approval");
+        navigate("/pending-approval");
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");

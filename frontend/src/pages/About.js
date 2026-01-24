@@ -61,9 +61,10 @@ const About = () => {
   const teamMembers = [
     {
       name: "जीतेश कुमार गुप्ता",
-      role: "Cofounder",
+      role: "Co-Founder",
       img: जीतेशकुमारगुप्ता,
     },
+
     {
       name: "नरेंद्र कुमार महावर",
       role: "चेयरमैन",
@@ -98,8 +99,9 @@ const About = () => {
             transition={{ delay: 0.2 }}
             className="text-lg max-w-3xl mx-auto leading-relaxed"
           >
-            NVP Welfare Foundation India - समावेशी सामाजिक विकास, मानव कल्याण और
-            भारत भर में सतत प्रगति के लिए प्रतिबद्ध एक गैर-लाभकारी संगठन
+            NVP (New Vision Plantation) & Welfare Foundation India - समावेशी
+            सामाजिक विकास, मानव कल्याण और भारत भर में सतत प्रगति के लिए
+            प्रतिबद्ध एक गैर-लाभकारी संगठन
           </motion.p>
         </div>
       </section>

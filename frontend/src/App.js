@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import PendingApproval from "./pages/pending-approval";
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
+
             <Route
               path="/member-dashboard"
               element={

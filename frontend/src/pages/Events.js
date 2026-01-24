@@ -27,6 +27,12 @@ const Events = () => {
     document.title = "Events || Emergent";
   }, []);
 
+  const getImageUrl = (url) => {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    return `${BACKEND_URL}${url}`;
+  };
+
   return (
     <div className="min-h-screen bg-stone-50 py-12" data-testid="events-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,7 +62,8 @@ const Events = () => {
               >
                 {event.image_url && (
                   <img
-                    src={event.image_url}
+                    // src={event.image_url}
+                    src={getImageUrl(event.image_url)}
                     alt={event.title}
                     className="w-full h-48 object-cover"
                   />

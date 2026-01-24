@@ -4,6 +4,7 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, FileText, Award, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -13,6 +14,13 @@ const MemberDashboard = () => {
   const [donations, setDonations] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.role !== "member") {
+      navigate("/pending-approval");
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchData();
