@@ -1084,7 +1084,8 @@ app.add_middleware(
        allow_origins=[
         "http://localhost:3000",
         "http://0.0.0.0:8000",
-        "https://ngo-3-freelancing-project-ye1a.vercel.app"
+        "https://ngo-3-freelancing-project-ye1a.vercel.app",
+        "https://nvpwfoundationindia.co.in",
     ],
     allow_credentials=False,     # only if you need cookies/auth
     allow_methods=["*"],        # allow OPTIONS, POST, GET, etc.
