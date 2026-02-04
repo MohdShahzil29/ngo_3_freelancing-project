@@ -9,7 +9,7 @@ import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_key";
+const RAZORPAY_KEY_ID = "rzp_live_SAlQyx5sRXqQwH";
 
 const Donate = () => {
   const [formData, setFormData] = useState({
@@ -78,6 +78,7 @@ const Donate = () => {
               amount: "",
               purpose: "",
             });
+               navigate("/thank-you");
           } catch (error) {
             toast.error("Payment verification failed");
           }
