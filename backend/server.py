@@ -508,6 +508,7 @@ async def create_donation_order(donation_data: dict):
         "order_id": razor_order['id'],
         "amount": amount_in_paise,
         "currency": "INR",
+         "key": RAZORPAY_KEY_ID,
         "donation_id": donation.id
     }
 
