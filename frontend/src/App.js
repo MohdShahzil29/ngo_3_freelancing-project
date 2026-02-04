@@ -18,6 +18,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import PendingApproval from "./pages/pending-approval";
+import ThankYou from "./pages/ThankYou";
+
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+     <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/donate" element={<Donate />} />
