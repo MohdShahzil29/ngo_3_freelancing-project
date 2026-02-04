@@ -397,26 +397,101 @@ async def update_member_status(
 
 # ==================== DONATION ROUTES ====================
 
+# @api_router.post("/donations/create-order")
+# async def create_donation_order(donation_data: dict):
+#     if not razorpay_client:
+#         raise HTTPException(status_code=500, detail="Payment gateway not configured")
+    
+#     amount_in_paise = int(donation_data['amount'] * 100)
+    
+#     razor_order = razorpay_client.order.create({
+#         "amount": amount_in_paise,
+#         "currency": "INR",
+#         "payment_capture": 1
+#     })
+    
+#     receipt_number = generate_receipt_number()
+    
+#     donation = Donation(
+#         donor_name=donation_data['donor_name'],
+#         donor_email=donation_data['donor_email'],
+#         donor_phone=donation_data['donor_phone'],
+#         amount=donation_data['amount'],
+#         payment_method="online",
+#         order_id=razor_order['id'],
+#         receipt_number=receipt_number,
+#         purpose=donation_data.get('purpose'),
+#         campaign_id=donation_data.get('campaign_id'),
+#         status="pending"
+#     )
+    
+#     doc = donation.model_dump()
+#     doc['created_at'] = doc['created_at'].isoformat()
+#     await db.donations.insert_one(doc)
+    
+#     return {
+#         "order_id": razor_order['id'],
+#         "amount": amount_in_paise,
+#         "currency": "INR",
+#         "donation_id": donation.id
+#     }
+
+
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from razorpay.errors import BadRequestError
+
 @api_router.post("/donations/create-order")
 async def create_donation_order(donation_data: dict):
+    # 1) payment gateway configured?
     if not razorpay_client:
         raise HTTPException(status_code=500, detail="Payment gateway not configured")
-    
-    amount_in_paise = int(donation_data['amount'] * 100)
-    
-    razor_order = razorpay_client.order.create({
-        "amount": amount_in_paise,
-        "currency": "INR",
-        "payment_capture": 1
-    })
-    
+
+    # 2) basic validation & logging for debugging
+    logging.info("Create order called with: %s", donation_data)
+    raw_amount = donation_data.get('amount', None)
+
+    if raw_amount is None:
+        raise HTTPException(status_code=400, detail="Missing amount")
+
+    # 3) parse amount safely using Decimal
+    try:
+        # ensure we convert things like 10, "10", "10.5" etc.
+        amount_decimal = Decimal(str(raw_amount))
+    except (InvalidOperation, ValueError):
+        raise HTTPException(status_code=400, detail="Invalid amount format")
+
+    if amount_decimal <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be greater than 0")
+
+    # 4) convert to paise and ensure integer (round half up)
+    amount_in_paise = int((amount_decimal * 100).quantize(0, rounding=ROUND_HALF_UP))
+
+    # safety check
+    if not isinstance(amount_in_paise, int):
+        raise HTTPException(status_code=400, detail="Failed to convert amount to integer paise")
+
+    try:
+        razor_order = razorpay_client.order.create({
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "payment_capture": 1
+        })
+    except BadRequestError as e:
+        logging.exception("Razorpay BadRequestError: %s", e)
+        # return the gateway message (400) so frontend can show it
+        raise HTTPException(status_code=400, detail=f"Payment gateway error: {str(e)}")
+    except Exception as e:
+        logging.exception("Unexpected error while creating razorpay order: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to create payment order")
+
+    # continue saving donation record
     receipt_number = generate_receipt_number()
-    
+
     donation = Donation(
-        donor_name=donation_data['donor_name'],
-        donor_email=donation_data['donor_email'],
-        donor_phone=donation_data['donor_phone'],
-        amount=donation_data['amount'],
+        donor_name=donation_data.get('donor_name', ''),
+        donor_email=donation_data.get('donor_email', ''),
+        donor_phone=donation_data.get('donor_phone', ''),
+        amount=float(amount_decimal),   # store original amount as float (or store Decimal as string)
         payment_method="online",
         order_id=razor_order['id'],
         receipt_number=receipt_number,
@@ -424,17 +499,19 @@ async def create_donation_order(donation_data: dict):
         campaign_id=donation_data.get('campaign_id'),
         status="pending"
     )
-    
+
     doc = donation.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.donations.insert_one(doc)
-    
+
     return {
         "order_id": razor_order['id'],
         "amount": amount_in_paise,
         "currency": "INR",
         "donation_id": donation.id
     }
+
+
 
 @api_router.post("/donations/verify-payment")
 async def verify_donation_payment(payment_data: dict):
